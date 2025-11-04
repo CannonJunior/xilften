@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="XILFTEN - Media multi-use scheduling application">
+    <title>XILFTEN - Media Scheduler</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/carousel.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/components.css">
+
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <!-- Main Application Container -->
+    <div id="app" class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">XILFTEN</h1>
+                <p class="app-subtitle">Media Scheduling & Discovery</p>
+                <nav class="main-nav">
+                    <button class="nav-button active" data-view="carousel">Browse</button>
+                    <button class="nav-button" data-view="calendar">Calendar</button>
+                    <button class="nav-button" data-view="recommendations">Recommendations</button>
+                    <button class="nav-button" data-view="ai">AI Assistant</button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Carousel View -->
+            <section id="carousel-view" class="view-section active">
+                <div class="section-header">
+                    <h2>Browse Media</h2>
+                    <div class="view-controls">
+                        <select id="filter-genre" class="filter-select">
+                            <option value="">All Genres</option>
+                            <option value="sci-fi">Science Fiction</option>
+                            <option value="action">Action</option>
+                            <option value="film-noir">Film Noir</option>
+                            <option value="documentary">Documentary</option>
+                            <option value="comedy">Comedy</option>
+                            <option value="anime">Anime</option>
+                        </select>
+                        <input type="search" id="search-media" class="search-input" placeholder="Search media...">
+                    </div>
+                </div>
+                <div id="media-carousel" class="carousel-container">
+                    <!-- D3.js carousel will be rendered here -->
+                    <p class="loading-message">Loading media...</p>
+                </div>
+            </section>
+
+            <!-- Calendar View -->
+            <section id="calendar-view" class="view-section">
+                <div class="section-header">
+                    <h2>Calendar</h2>
+                    <div class="view-controls">
+                        <button id="prev-month" class="calendar-nav-button">← Previous</button>
+                        <span id="current-month" class="current-month">November 2025</span>
+                        <button id="next-month" class="calendar-nav-button">Next →</button>
+                    </div>
+                </div>
+                <div id="calendar-container" class="calendar-container">
+                    <!-- D3.js calendar will be rendered here -->
+                    <p class="loading-message">Loading calendar...</p>
+                </div>
+                <div class="calendar-legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #FF6B6B;"></span>
+                        <span class="legend-label">Watch Date</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #4ECDC4;"></span>
+                        <span class="legend-label">New Release</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #95E1D3;"></span>
+                        <span class="legend-label">Review Date</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recommendations View -->
+            <section id="recommendations-view" class="view-section">
+                <div class="section-header">
+                    <h2>Recommendations</h2>
+                    <div class="view-controls">
+                        <select id="criteria-preset" class="filter-select">
+                            <option value="">Select Criteria Preset...</option>
+                            <option value="high-quality-scifi">High Quality Sci-Fi</option>
+                            <option value="friday-action">Friday Night Action</option>
+                        </select>
+                        <button id="create-criteria" class="primary-button">Create Custom Criteria</button>
+                    </div>
+                </div>
+                <div id="recommendations-container" class="recommendations-container">
+                    <!-- Recommendations will be rendered here -->
+                    <p class="empty-message">Select a criteria preset or create your own to get recommendations.</p>
+                </div>
+            </section>
+
+            <!-- AI Assistant View -->
+            <section id="ai-view" class="view-section">
+                <div class="section-header">
+                    <h2>AI Assistant</h2>
+                    <p class="section-description">Create mashups and get creative recommendations</p>
+                </div>
+                <div id="ai-chat-container" class="chat-container">
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="chat-message assistant">
+                            <p>Hello! I can help you:</p>
+                            <ul>
+                                <li>Find movies that combine different genres and styles</li>
+                                <li>Generate high-concept summaries for new ideas</li>
+                                <li>Discover hidden gems in your favorite categories</li>
+                            </ul>
+                            <p>Try asking: "Suggest a movie with fantasy action like World of Warcraft but serious drama like Chernobyl"</p>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <textarea id="chat-input" class="chat-input" placeholder="Ask me anything about media..." rows="3"></textarea>
+                        <button id="send-message" class="primary-button">Send</button>
+                    </div>
+                    <div class="preset-queries">
+                        <button class="preset-button" data-query="fantasy action + serious drama">Fantasy + Drama</button>
+                        <button class="preset-button" data-query="witty dialogue + action + plot-driven">Dialogue + Action + Plot</button>
+                        <button class="preset-button" data-query="underrated Iranian films 1970s">Iranian Cinema 1970s</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2025 XILFTEN - Media Scheduling & Discovery</p>
+            <p class="footer-note">Running on port 7575 | Powered by Ollama & TMDB</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/api-client.js"></script>
+    <script type="module" src="js/carousel.js"></script>
+    <script type="module" src="js/calendar.js"></script>
+    <script type="module" src="js/recommendations.js"></script>
+    <script type="module" src="js/criteria-builder.js"></script>
+    <script type="module" src="js/ai-interface.js"></script>
+</body>
+</html>
