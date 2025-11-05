@@ -1,0 +1,393 @@
+/**
+ * Carousel Styles
+ * D3.js-powered horizontal scrolling carousel with mousewheel support
+ */
+
+/* ========== Carousel Container ========== */
+.carousel-container {
+    position: relative;
+    width: 100%;
+    min-height: 500px;
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    padding: var(--spacing-xl);
+}
+
+/* ========== Carousel Viewport ========== */
+.carousel-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* ========== Carousel Track ========== */
+.carousel-track {
+    display: flex;
+    gap: var(--spacing-lg);
+    transition: transform var(--transition-slow);
+    will-change: transform;
+}
+
+/* ========== Carousel Item ========== */
+.carousel-item {
+    flex-shrink: 0;
+    width: 280px;
+    background-color: var(--color-surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
+}
+
+.carousel-item:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+}
+
+.carousel-item.active {
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+/* ========== Media Poster ========== */
+.media-poster {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    background: linear-gradient(135deg, var(--color-bg-tertiary) 0%, var(--color-surface) 100%);
+}
+
+.media-poster.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+}
+
+/* ========== Media Info ========== */
+.media-info {
+    padding: var(--spacing-md);
+}
+
+.media-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-sm);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.media-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-sm);
+}
+
+.media-year,
+.media-runtime {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.media-rating {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-warning);
+    font-weight: var(--font-weight-medium);
+}
+
+.media-rating svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* ========== Genre Tags ========== */
+.media-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.genre-tag {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+/* ========== Carousel Navigation ========== */
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: var(--z-dropdown);
+}
+
+.carousel-nav.prev {
+    left: var(--spacing-md);
+}
+
+.carousel-nav.next {
+    right: var(--spacing-md);
+}
+
+.carousel-nav-button {
+    width: 48px;
+    height: 48px;
+    background-color: rgba(30, 41, 59, 0.9);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.carousel-nav-button:hover {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: scale(1.1);
+}
+
+.carousel-nav-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.carousel-nav-button:disabled:hover {
+    background-color: rgba(30, 41, 59, 0.9);
+    transform: scale(1);
+}
+
+/* ========== Thumbnail Strip ========== */
+.carousel-thumbnails {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-md);
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+}
+
+.carousel-thumbnails::-webkit-scrollbar {
+    height: 4px;
+}
+
+.carousel-thumbnails::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.carousel-thumbnails::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+}
+
+.carousel-thumbnail {
+    width: 60px;
+    height: 90px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: all var(--transition-fast);
+    border: 2px solid transparent;
+}
+
+.carousel-thumbnail:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+.carousel-thumbnail.active {
+    opacity: 1;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+}
+
+.carousel-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ========== Progress Indicator ========== */
+.carousel-progress {
+    position: absolute;
+    bottom: var(--spacing-md);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.progress-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-border);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.progress-dot:hover {
+    background-color: var(--color-border-light);
+    transform: scale(1.2);
+}
+
+.progress-dot.active {
+    background-color: var(--color-primary);
+    width: 24px;
+}
+
+/* ========== Scroll Snap Support ========== */
+.carousel-track.snap-enabled {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.carousel-track.snap-enabled::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-item.snap-target {
+    scroll-snap-align: start;
+}
+
+/* ========== Loading State ========== */
+.carousel-skeleton {
+    display: flex;
+    gap: var(--spacing-lg);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-item {
+    width: 280px;
+    height: 500px;
+    background: linear-gradient(
+        90deg,
+        var(--color-surface) 0%,
+        var(--color-bg-tertiary) 50%,
+        var(--color-surface) 100%
+    );
+    background-size: 200% 100%;
+    border-radius: var(--radius-lg);
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ========== Responsive Design ========== */
+@media (max-width: 768px) {
+    .carousel-container {
+        padding: var(--spacing-md);
+    }
+
+    .carousel-item {
+        width: 200px;
+    }
+
+    .media-poster {
+        height: 300px;
+    }
+
+    .carousel-nav-button {
+        width: 40px;
+        height: 40px;
+    }
+
+    .carousel-thumbnails {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-item {
+        width: 160px;
+    }
+
+    .media-poster {
+        height: 240px;
+    }
+
+    .media-info {
+        padding: var(--spacing-sm);
+    }
+
+    .media-title {
+        font-size: var(--font-size-base);
+    }
+
+    .media-meta {
+        font-size: var(--font-size-xs);
+    }
+}
+
+/* ========== Accessibility ========== */
+.carousel-item:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.carousel-nav-button:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ========== Smooth Transitions ========== */
+.carousel-item,
+.carousel-track {
+    will-change: transform;
+}
+
+.carousel-item.entering {
+    animation: slideIn var(--transition-base);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

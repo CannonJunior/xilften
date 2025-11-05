@@ -6,10 +6,12 @@ This is the entry point for the XILFTEN API server running on port 7575.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from datetime import datetime
 import logging
 import sys
+from pathlib import Path
 
 from config.settings import settings
 from config.database import db_manager
@@ -62,6 +64,13 @@ async def startup_event():
         logger.info("📊 Initializing DuckDB...")
         db_manager.get_duckdb_connection()
         logger.info("✅ DuckDB initialized successfully")
+
+        # Run migrations
+        logger.info("🔄 Running database migrations...")
+        from backend.services.database_service import get_database_service
+        db_service = get_database_service()
+        db_service.run_migrations()
+
     except Exception as e:
         logger.error(f"❌ Failed to initialize DuckDB: {e}")
 
@@ -81,11 +90,37 @@ async def startup_event():
     # Check TMDB API (if enabled)
     if settings.enable_tmdb_sync:
         logger.info("🎬 Checking TMDB API availability...")
-        if not settings.tmdb_api_key or settings.tmdb_api_key == "":
-            logger.warning("⚠️  TMDB API key not configured")
-        else:
-            # TODO: Implement TMDB health check
-            logger.info("⚠️  TMDB health check not yet implemented")
+        try:
+            from backend.services.tmdb_client import tmdb_client
+            health_status = await tmdb_client.health_check()
+
+            if health_status["healthy"]:
+                logger.info(f"✅ {health_status['message']}")
+            elif health_status["status"] == "not_configured":
+                logger.warning(f"⚠️  {health_status['message']}")
+            else:
+                logger.error(f"❌ {health_status['message']}")
+        except Exception as e:
+            logger.error(f"❌ TMDB health check failed: {str(e)}")
+
+    # Seed default recommendation presets
+    logger.info("🎯 Checking recommendation presets...")
+    try:
+        from backend.services.recommendation_service import recommendation_service
+        recommendation_service.seed_default_presets()
+        logger.info("✅ Recommendation presets ready")
+    except Exception as e:
+        logger.error(f"❌ Failed to seed recommendation presets: {str(e)}")
+
+    # Seed genre taxonomy
+    logger.info("🎭 Checking genre taxonomy...")
+    try:
+        from backend.services.genre_service import get_genre_service
+        genre_service = get_genre_service()
+        result = genre_service.seed_genres()
+        logger.info(f"✅ Genres ready: {result['main_genres']} main + {result['subgenres']} sub = {result['total']} total")
+    except Exception as e:
+        logger.error(f"❌ Failed to seed genres: {str(e)}")
 
     logger.info("=" * 80)
     logger.info("✨ Application startup complete!")
@@ -104,21 +139,31 @@ async def shutdown_event():
     logger.info("✅ Shutdown complete")
 
 
-# Root endpoint
+# Mount static files for frontend
+frontend_dir = Path(__file__).parent.parent / "frontend"
+if frontend_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
+    logger.info(f"📁 Mounted static files from: {frontend_dir}")
+
+# Root endpoint - serve frontend
 @app.get("/")
 async def root():
     """
-    Root endpoint.
+    Root endpoint - serves frontend HTML.
 
     Returns:
-        dict: Welcome message and API information
+        FileResponse: Frontend index.html
     """
-    return {
-        "message": f"Welcome to {settings.app_name.upper()} API",
-        "version": settings.app_version,
-        "docs": "/docs",
-        "health": "/api/health",
-    }
+    index_path = frontend_dir / "index.html"
+    if index_path.exists():
+        return FileResponse(str(index_path))
+    else:
+        return {
+            "message": f"Welcome to {settings.app_name.upper()} API",
+            "version": settings.app_version,
+            "docs": "/docs",
+            "health": "/api/health",
+        }
 
 
 # Health check endpoint
@@ -162,7 +207,25 @@ async def health_check():
         health_status["data"]["services"]["chromadb"] = f"error: {str(e)}"
         health_status["data"]["status"] = "degraded"
 
-    # TODO: Add Ollama and TMDB health checks
+    # Check TMDB API
+    if settings.enable_tmdb_sync:
+        try:
+            from backend.services.tmdb_client import tmdb_client
+            tmdb_health = await tmdb_client.health_check()
+            if tmdb_health["healthy"]:
+                health_status["data"]["services"]["tmdb"] = "configured"
+            elif tmdb_health["status"] == "not_configured":
+                health_status["data"]["services"]["tmdb"] = "not_configured"
+            else:
+                health_status["data"]["services"]["tmdb"] = f"error: {tmdb_health['message']}"
+                health_status["data"]["status"] = "degraded"
+        except Exception as e:
+            health_status["data"]["services"]["tmdb"] = f"error: {str(e)}"
+            health_status["data"]["status"] = "degraded"
+    else:
+        health_status["data"]["services"]["tmdb"] = "disabled"
+
+    # TODO: Add Ollama health check
 
     return health_status
 
@@ -186,16 +249,22 @@ async def get_version():
     }
 
 
-# TODO: Import and include routers
-# from backend.routes import media, genres, reviews, calendar, recommendations, ai, criteria
+# Import and include routers
+from backend.routes import (
+    media_router,
+    genres_router,
+    recommendations_router,
+    calendar_router,
+    reviews_router
+)
+from backend.routes.ai import router as ai_router
 
-# app.include_router(media.router, prefix="/api/media", tags=["Media"])
-# app.include_router(genres.router, prefix="/api/genres", tags=["Genres"])
-# app.include_router(reviews.router, prefix="/api/reviews", tags=["Reviews"])
-# app.include_router(calendar.router, prefix="/api/calendar", tags=["Calendar"])
-# app.include_router(recommendations.router, prefix="/api/recommendations", tags=["Recommendations"])
-# app.include_router(ai.router, prefix="/api/ai", tags=["AI"])
-# app.include_router(criteria.router, prefix="/api/criteria", tags=["Criteria"])
+app.include_router(media_router, prefix="/api/media", tags=["Media"])
+app.include_router(genres_router, prefix="/api/genres", tags=["Genres"])
+app.include_router(recommendations_router, prefix="/api/recommendations", tags=["Recommendations"])
+app.include_router(calendar_router, prefix="/api/calendar", tags=["Calendar"])
+app.include_router(reviews_router, prefix="/api/reviews", tags=["Reviews"])
+app.include_router(ai_router)  # AI router already has /api/ai prefix
 
 
 if __name__ == "__main__":
