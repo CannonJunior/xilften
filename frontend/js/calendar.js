@@ -46,7 +46,7 @@ export function initCalendar() {
 
 /**
  * Setup mousewheel scrolling for day navigation
- * Enhanced with 3x speed and momentum-based hard scroll detection
+ * Enhanced with 3x animation speed and momentum-based hard scroll detection
  */
 function setupMousewheelScrolling() {
     const sidebar = document.getElementById('calendar-sidebar');
@@ -54,7 +54,6 @@ function setupMousewheelScrolling() {
 
     let scrollTimeout;
     let lastScrollTime = 0;
-    let scrollVelocity = 0;
 
     sidebar.addEventListener('wheel', (event) => {
         event.preventDefault();
@@ -73,26 +72,23 @@ function setupMousewheelScrolling() {
         const absDelta = Math.abs(event.deltaY);
         const isHardScroll = absDelta > 100 || (timeDelta < 50 && absDelta > 50);
 
-        // Calculate days to scroll:
-        // - Base speed: 3x (3 days per normal scroll)
-        // - Hard scroll: 30+ days (full month flip)
-        let daysToScroll;
+        // Determine scroll direction (always 1 day at a time)
+        const direction = Math.sign(event.deltaY);
 
+        // Calculate animation speed based on scroll intensity
+        let animationSpeed;
         if (isHardScroll) {
-            // Hard scroll: jump through 30-60 days based on velocity
-            daysToScroll = Math.min(60, Math.max(30, Math.floor(absDelta / 3)));
+            // Hard scroll: 10x faster animation (rapid page flipping)
+            animationSpeed = 30; // 30ms per day = ~33 days/second
         } else {
-            // Normal scroll: 3x base speed (3 days)
-            daysToScroll = 3;
+            // Normal scroll: 3x faster than default
+            // Default would be ~300ms, so 3x = 100ms per day
+            animationSpeed = 100;
         }
 
-        // Determine scroll direction
-        const direction = Math.sign(event.deltaY);
-        const delta = direction * daysToScroll;
-
-        // Change selected date by delta days
+        // Change selected date by 1 day
         const newDate = new Date(calendarState.selectedDate);
-        newDate.setDate(newDate.getDate() + delta);
+        newDate.setDate(newDate.getDate() + direction);
 
         // Check if we crossed a month boundary
         const crossedMonth = newDate.getMonth() !== calendarState.selectedDate.getMonth();
@@ -103,11 +99,11 @@ function setupMousewheelScrolling() {
             calendarState.currentDate = new Date(newDate);
         }
 
-        // Trigger page turn animation
+        // Trigger page turn animation with speed parameter
         const animDirection = direction > 0 ? 'forward' : 'backward';
-        triggerPageTurn(animDirection);
+        triggerPageTurn(animDirection, animationSpeed);
 
-        // Debounce the rendering for smooth scrolling
+        // Debounce the rendering based on animation speed
         clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
             if (crossedMonth) {
@@ -116,7 +112,7 @@ function setupMousewheelScrolling() {
                 updateMonthGridSelection();
             }
             renderDayCard();
-        }, 16);
+        }, animationSpeed * 0.5); // Render halfway through animation
     }, { passive: false });
 }
 
@@ -124,8 +120,9 @@ function setupMousewheelScrolling() {
  * Trigger page turn animation
  *
  * @param {string} direction - 'forward' or 'backward'
+ * @param {number} speed - Animation duration in milliseconds (default: 300ms)
  */
-function triggerPageTurn(direction) {
+function triggerPageTurn(direction, speed = 300) {
     const dayCard = document.getElementById('day-detail-card');
     if (!dayCard) return;
 
@@ -133,6 +130,9 @@ function triggerPageTurn(direction) {
 
     // Remove any existing animation classes
     dayCard.classList.remove('page-turn-forward', 'page-turn-backward');
+
+    // Set custom animation duration via CSS variable
+    dayCard.style.setProperty('--page-turn-duration', `${speed}ms`);
 
     // Force reflow to restart animation
     void dayCard.offsetWidth;
@@ -145,7 +145,7 @@ function triggerPageTurn(direction) {
     setTimeout(() => {
         dayCard.classList.remove(className);
         calendarState.isAnimating = false;
-    }, 600); // Match animation duration
+    }, speed);
 }
 
 /**
