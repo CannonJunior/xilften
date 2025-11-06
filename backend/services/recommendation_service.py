@@ -109,23 +109,26 @@ class RecommendationService:
         conn = self.db.get_duckdb_connection()
 
         import json
+        import uuid
+
+        # Generate UUID for the preset
+        preset_id = str(uuid.uuid4())
         criteria_json = json.dumps(preset_data.criteria_config)
 
-        result = conn.execute("""
-            INSERT INTO recommendation_criteria (name, description, criteria_config, is_default)
-            VALUES (?, ?, ?, ?)
-            RETURNING id
+        conn.execute("""
+            INSERT INTO recommendation_criteria (id, name, description, criteria_config, is_default)
+            VALUES (?, ?, ?, ?, ?)
         """, [
+            preset_id,
             preset_data.name,
             preset_data.description,
             criteria_json,
             preset_data.is_default
         ])
 
-        preset_id = result.fetchone()[0]
         logger.info(f"Created criteria preset: {preset_id}")
 
-        return self.get_preset_by_id(UUID(str(preset_id)))
+        return self.get_preset_by_id(UUID(preset_id))
 
     def update_preset(
         self,

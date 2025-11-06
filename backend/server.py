@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from datetime import datetime
+from contextlib import asynccontextmanager
 import logging
 import sys
 from pathlib import Path
@@ -27,32 +28,16 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Create FastAPI application
-app = FastAPI(
-    title=settings.app_name.upper(),
-    description="Media multi-use scheduling application with CAG-powered recommendations",
-    version=settings.app_version,
-    debug=settings.debug,
-)
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.get_cors_origins_list(),
-    allow_credentials=settings.cors_allow_credentials,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-# Startup and shutdown events
-@app.on_event("startup")
-async def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     """
-    Execute on application startup.
+    Lifespan context manager for startup and shutdown events.
 
-    Initializes database connections and performs health checks.
+    Yields:
+        None: Control during application lifetime
     """
+    # Startup
     logger.info("=" * 80)
     logger.info(f"🚀 Starting {settings.app_name.upper()} v{settings.app_version}")
     logger.info(f"🌐 Server will run on http://{settings.app_host}:{settings.app_port}")
@@ -84,8 +69,19 @@ async def startup_event():
     # Check Ollama availability (if enabled)
     if settings.enable_ai_features:
         logger.info("🤖 Checking Ollama availability...")
-        # TODO: Implement Ollama health check
-        logger.info("⚠️  Ollama health check not yet implemented")
+        try:
+            from backend.services.ollama_client import OllamaClient
+            ollama_client = OllamaClient()
+            is_healthy = await ollama_client.health_check()
+
+            if is_healthy:
+                models = await ollama_client.list_models()
+                model_names = [m.get('name') for m in models]
+                logger.info(f"✅ Ollama is running with {len(models)} models: {', '.join(model_names)}")
+            else:
+                logger.warning("⚠️  Ollama server is not responding. AI features may be unavailable.")
+        except Exception as e:
+            logger.error(f"❌ Ollama health check failed: {str(e)}")
 
     # Check TMDB API (if enabled)
     if settings.enable_tmdb_sync:
@@ -126,17 +122,32 @@ async def startup_event():
     logger.info("✨ Application startup complete!")
     logger.info("=" * 80)
 
+    # Yield control during application lifetime
+    yield
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    """
-    Execute on application shutdown.
-
-    Closes database connections and performs cleanup.
-    """
+    # Shutdown
     logger.info("🛑 Shutting down application...")
     db_manager.close_connections()
     logger.info("✅ Shutdown complete")
+
+
+# Create FastAPI application with lifespan handler
+app = FastAPI(
+    title=settings.app_name.upper(),
+    description="Media multi-use scheduling application with CAG-powered recommendations",
+    version=settings.app_version,
+    debug=settings.debug,
+    lifespan=lifespan,
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.get_cors_origins_list(),
+    allow_credentials=settings.cors_allow_credentials,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # Mount static files for frontend
@@ -225,7 +236,22 @@ async def health_check():
     else:
         health_status["data"]["services"]["tmdb"] = "disabled"
 
-    # TODO: Add Ollama health check
+    # Check Ollama
+    if settings.enable_ai_features:
+        try:
+            from backend.services.ollama_client import OllamaClient
+            ollama_client = OllamaClient()
+            is_healthy = await ollama_client.health_check()
+            if is_healthy:
+                health_status["data"]["services"]["ollama"] = "connected"
+            else:
+                health_status["data"]["services"]["ollama"] = "not_responding"
+                health_status["data"]["status"] = "degraded"
+        except Exception as e:
+            health_status["data"]["services"]["ollama"] = f"error: {str(e)}"
+            health_status["data"]["status"] = "degraded"
+    else:
+        health_status["data"]["services"]["ollama"] = "disabled"
 
     return health_status
 
