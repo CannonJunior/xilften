@@ -107,10 +107,6 @@ async function initializeView(viewName) {
             // Carousel initialization handled by carousel.js
             console.log('📽️ Initializing carousel view...');
             break;
-        case 'calendar':
-            // Calendar initialization handled by calendar.js
-            console.log('📅 Initializing calendar view...');
-            break;
         case 'recommendations':
             console.log('⭐ Initializing recommendations view...');
             await recommendations.init();
@@ -338,7 +334,7 @@ async function sendAIMessage() {
         }
 
         // Add AI response
-        appendChatMessage('assistant', response.data.response);
+        appendChatMessage('assistant', response.data.content);
 
     } catch (error) {
         console.error('❌ AI request failed:', error);

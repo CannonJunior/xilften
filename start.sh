@@ -91,18 +91,13 @@ echo -e "${GREEN}✅ Current directory: $(pwd)${NC}"
 
 echo ""
 
-# Check if .env file exists
-if [ ! -f ".env" ]; then
-    echo -e "${YELLOW}⚠️  .env file not found${NC}"
-    echo -e "${YELLOW}   Creating from .env.example...${NC}"
-    if [ -f ".env.example" ]; then
-        cp .env.example .env
-        echo -e "${GREEN}✅ .env file created${NC}"
-        echo -e "${YELLOW}⚠️  Please configure your TMDB API key in .env${NC}"
-    else
-        echo -e "${RED}❌ .env.example not found${NC}"
-        exit 1
-    fi
+# Source environment keys if available
+if [ -f "$HOME/keys.sh" ]; then
+    echo -e "${BLUE}🔑 Sourcing environment keys from ~/keys.sh...${NC}"
+    source "$HOME/keys.sh"
+    echo -e "${GREEN}✅ Environment keys loaded${NC}"
+else
+    echo -e "${YELLOW}⚠️  ~/keys.sh not found - using existing environment variables${NC}"
 fi
 
 echo ""

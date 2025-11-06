@@ -369,7 +369,7 @@ export async function generateHighConcept(referenceMedia, options = {}) {
  * @returns {Promise<Object>} - AI response
  */
 export async function chatWithAI(message, options = {}) {
-    return post('/api/ai/chat', { message, ...options });
+    return post('/api/ai/chat', { user_message: message, ...options });
 }
 
 /**

@@ -1,6 +1,6 @@
 /**
- * Calendar Module
- * D3.js-powered calendar with event visualization
+ * Calendar Module - Month Grid + Day Detail Card
+ * D3.js-powered calendar with month view and page-turning day card
  */
 
 import * as api from './api-client.js';
@@ -8,85 +8,129 @@ import * as api from './api-client.js';
 // Calendar state
 let calendarState = {
     currentDate: new Date(),
+    selectedDate: new Date(),
     events: [],
-    selectedDate: null,
     container: null,
+    isInitialized: false,
+    isAnimating: false,
 };
 
 /**
  * Initialize calendar
  */
 export function initCalendar() {
-    console.log('📅 Initializing D3.js calendar...');
+    console.log('📅 Initializing calendar sidebar...');
 
-    // Setup month navigation
-    setupMonthNavigation();
-
-    // Load and render calendar when view becomes active
-    window.addEventListener('viewChanged', (event) => {
-        if (event.detail.view === 'calendar') {
-            loadCalendarData();
-        }
-    });
-}
-
-/**
- * Setup month navigation
- */
-function setupMonthNavigation() {
-    const prevButton = document.getElementById('prev-month');
-    const nextButton = document.getElementById('next-month');
-
-    if (prevButton) {
-        prevButton.addEventListener('click', () => {
-            changeMonth(-1);
-        });
+    if (calendarState.isInitialized) {
+        return;
     }
 
-    if (nextButton) {
-        nextButton.addEventListener('click', () => {
-            changeMonth(1);
-        });
+    const monthGrid = document.getElementById('calendar-month-grid');
+    const dayCard = document.getElementById('day-detail-card');
+
+    if (!monthGrid || !dayCard) {
+        console.error('❌ Calendar containers not found');
+        return;
     }
-}
 
-/**
- * Change month
- *
- * @param {number} direction - -1 for previous, 1 for next
- */
-function changeMonth(direction) {
-    const newDate = new Date(calendarState.currentDate);
-    newDate.setMonth(newDate.getMonth() + direction);
-    calendarState.currentDate = newDate;
+    calendarState.isInitialized = true;
 
-    updateMonthDisplay();
+    // Setup mousewheel scrolling
+    setupMousewheelScrolling();
+
+    // Load and render initial calendar
     loadCalendarData();
+
+    console.log('✅ Calendar sidebar initialized');
 }
 
 /**
- * Update month display text
+ * Setup mousewheel scrolling for day navigation
  */
-function updateMonthDisplay() {
-    const monthDisplay = document.getElementById('current-month');
-    if (monthDisplay) {
-        const monthName = calendarState.currentDate.toLocaleDateString('en-US', {
-            month: 'long',
-            year: 'numeric'
-        });
-        monthDisplay.textContent = monthName;
-    }
+function setupMousewheelScrolling() {
+    const sidebar = document.getElementById('calendar-sidebar');
+    if (!sidebar) return;
+
+    let scrollTimeout;
+
+    sidebar.addEventListener('wheel', (event) => {
+        event.preventDefault();
+
+        // Don't scroll if animation is in progress
+        if (calendarState.isAnimating) {
+            return;
+        }
+
+        // Determine scroll direction
+        const delta = Math.sign(event.deltaY);
+
+        // Change selected date by delta days
+        const newDate = new Date(calendarState.selectedDate);
+        newDate.setDate(newDate.getDate() + delta);
+
+        // Check if we crossed a month boundary
+        const crossedMonth = newDate.getMonth() !== calendarState.selectedDate.getMonth();
+
+        calendarState.selectedDate = newDate;
+
+        if (crossedMonth) {
+            calendarState.currentDate = new Date(newDate);
+        }
+
+        // Trigger page turn animation
+        const direction = delta > 0 ? 'forward' : 'backward';
+        triggerPageTurn(direction);
+
+        // Debounce the rendering - 16ms for 3x faster (~60fps)
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            if (crossedMonth) {
+                renderMonthGrid();
+            } else {
+                updateMonthGridSelection();
+            }
+            renderDayCard();
+        }, 16);
+    }, { passive: false });
 }
 
 /**
- * Load calendar data for current month
+ * Trigger page turn animation
+ *
+ * @param {string} direction - 'forward' or 'backward'
+ */
+function triggerPageTurn(direction) {
+    const dayCard = document.getElementById('day-detail-card');
+    if (!dayCard) return;
+
+    calendarState.isAnimating = true;
+
+    // Remove any existing animation classes
+    dayCard.classList.remove('page-turn-forward', 'page-turn-backward');
+
+    // Force reflow to restart animation
+    void dayCard.offsetWidth;
+
+    // Add appropriate animation class
+    const className = direction === 'forward' ? 'page-turn-forward' : 'page-turn-backward';
+    dayCard.classList.add(className);
+
+    // Remove animation class after animation completes
+    setTimeout(() => {
+        dayCard.classList.remove(className);
+        calendarState.isAnimating = false;
+    }, 600); // Match animation duration
+}
+
+/**
+ * Load calendar data
  */
 async function loadCalendarData() {
     try {
+        // Calculate date range for events
         const year = calendarState.currentDate.getFullYear();
         const month = calendarState.currentDate.getMonth();
 
-        // Get first and last day of month
         const startDate = new Date(year, month, 1);
         const endDate = new Date(year, month + 1, 0);
 
@@ -101,100 +145,153 @@ async function loadCalendarData() {
             calendarState.events = response.data || [];
         } catch (error) {
             console.warn('⚠️ API not available, using sample events');
-            calendarState.events = generateSampleEvents(year, month);
+            calendarState.events = generateSampleEvents();
         }
 
-        renderCalendar();
-        updateMonthDisplay();
+        renderMonthGrid();
+        renderDayCard();
 
     } catch (error) {
         console.error('❌ Failed to load calendar data:', error);
         calendarState.events = [];
-        renderCalendar();
+        renderMonthGrid();
+        renderDayCard();
     }
 }
 
 /**
  * Generate sample events for development
  *
- * @param {number} year - Year
- * @param {number} month - Month (0-indexed)
  * @returns {Array} - Sample events
  */
-function generateSampleEvents(year, month) {
-    return [
-        {
-            id: '1',
-            event_date: new Date(year, month, 5).toISOString().split('T')[0],
-            event_type: 'watch',
-            title: 'The Matrix',
-            color: '#FF6B6B'
-        },
-        {
-            id: '2',
-            event_date: new Date(year, month, 15).toISOString().split('T')[0],
-            event_type: 'release',
-            title: 'New Sci-Fi Release',
-            color: '#4ECDC4'
-        },
-        {
-            id: '3',
-            event_date: new Date(year, month, 20).toISOString().split('T')[0],
-            event_type: 'review',
-            title: 'Write Blade Runner review',
-            color: '#95E1D3'
-        },
-    ];
+function generateSampleEvents() {
+    const events = [];
+    const year = calendarState.currentDate.getFullYear();
+    const month = calendarState.currentDate.getMonth();
+
+    // Generate some random events for current month
+    for (let day = 1; day <= 28; day++) {
+        if (Math.random() > 0.7) { // 30% chance of event
+            const eventDate = new Date(year, month, day);
+
+            const eventTypes = ['watch', 'release', 'review'];
+            const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+
+            const titles = {
+                watch: ['The Matrix', 'Blade Runner', 'Inception', 'Interstellar'],
+                release: ['New Sci-Fi Release', 'Upcoming Documentary', 'New Series Premiere'],
+                review: ['Write review', 'Update ratings', 'Add comments']
+            };
+
+            events.push({
+                id: `event-${day}`,
+                event_date: eventDate.toISOString().split('T')[0],
+                event_type: eventType,
+                title: titles[eventType][Math.floor(Math.random() * titles[eventType].length)],
+            });
+        }
+    }
+
+    return events;
 }
 
 /**
- * Render calendar with D3.js
+ * Render month calendar grid
  */
-function renderCalendar() {
-    const container = d3.select('#calendar-container');
+function renderMonthGrid() {
+    const container = d3.select('#calendar-month-grid');
     container.html(''); // Clear previous content
-
-    carouselState.container = container;
 
     const year = calendarState.currentDate.getFullYear();
     const month = calendarState.currentDate.getMonth();
 
-    // Get calendar data
-    const calendarData = generateCalendarData(year, month);
+    // Update month/year header
+    const monthYearElement = document.getElementById('calendar-month-year');
+    if (monthYearElement) {
+        monthYearElement.textContent = calendarState.currentDate.toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric'
+        });
+    }
 
-    // Render day names
-    renderDayNames(container);
+    // Add weekday headers
+    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    weekdays.forEach(day => {
+        container
+            .append('div')
+            .attr('class', 'calendar-weekday-header')
+            .text(day);
+    });
 
-    // Render calendar grid
-    renderCalendarGrid(container, calendarData);
+    // Generate calendar data
+    const calendarData = generateMonthCalendarData(year, month);
 
-    console.log(`✅ Calendar rendered for ${year}-${month + 1}`);
+    // Render day cells
+    calendarData.forEach(dayData => {
+        const cell = container
+            .append('div')
+            .attr('class', () => {
+                let classes = 'calendar-day-cell';
+                if (!dayData.isCurrentMonth) classes += ' other-month';
+                if (dayData.isToday) classes += ' today';
+                if (dayData.isSelected) classes += ' selected';
+                if (dayData.hasEvents) classes += ' has-events';
+                return classes;
+            })
+            .text(dayData.day)
+            .on('click', () => handleDayClick(dayData));
+    });
+
+    console.log(`✅ Month grid rendered for ${year}-${month + 1}`);
 }
 
 /**
- * Generate calendar data structure
+ * Update month grid selection without full re-render
+ */
+function updateMonthGridSelection() {
+    const cells = d3.selectAll('.calendar-day-cell');
+
+    cells.each(function() {
+        const cell = d3.select(this);
+        const dayNumber = parseInt(cell.text());
+        const isOtherMonth = cell.classed('other-month');
+
+        // Only select cells from the current month that match the selected day
+        const isSelected = !isOtherMonth &&
+                          dayNumber === calendarState.selectedDate.getDate() &&
+                          calendarState.selectedDate.getMonth() === calendarState.currentDate.getMonth();
+
+        cell.classed('selected', isSelected);
+    });
+}
+
+/**
+ * Generate month calendar data
  *
  * @param {number} year - Year
  * @param {number} month - Month (0-indexed)
- * @returns {Array} - Calendar data with weeks and days
+ * @returns {Array} - Calendar data
  */
-function generateCalendarData(year, month) {
+function generateMonthCalendarData(year, month) {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const startingDayOfWeek = firstDay.getDay();
     const totalDays = lastDay.getDate();
 
-    const weeks = [];
-    let currentWeek = [];
+    const days = [];
 
     // Fill in days from previous month
     const prevMonthLastDay = new Date(year, month, 0).getDate();
     for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-        currentWeek.push({
-            day: prevMonthLastDay - i,
-            date: new Date(year, month - 1, prevMonthLastDay - i),
+        const day = prevMonthLastDay - i;
+        const date = new Date(year, month - 1, day);
+        days.push({
+            day: day,
+            date: date,
             isCurrentMonth: false,
-            events: []
+            isToday: false,
+            isSelected: false,
+            hasEvents: false
         });
     }
 
@@ -204,36 +301,164 @@ function generateCalendarData(year, month) {
         const dateString = date.toISOString().split('T')[0];
         const dayEvents = calendarState.events.filter(e => e.event_date === dateString);
 
-        currentWeek.push({
+        days.push({
             day: day,
             date: date,
             isCurrentMonth: true,
             isToday: isToday(date),
-            events: dayEvents
+            isSelected: isSameDay(date, calendarState.selectedDate),
+            hasEvents: dayEvents.length > 0
         });
-
-        if (currentWeek.length === 7) {
-            weeks.push(currentWeek);
-            currentWeek = [];
-        }
     }
 
     // Fill in days from next month
-    if (currentWeek.length > 0) {
-        let nextMonthDay = 1;
-        while (currentWeek.length < 7) {
-            currentWeek.push({
-                day: nextMonthDay,
-                date: new Date(year, month + 1, nextMonthDay),
-                isCurrentMonth: false,
-                events: []
-            });
-            nextMonthDay++;
-        }
-        weeks.push(currentWeek);
+    const remainingCells = 42 - days.length; // 6 rows * 7 days
+    for (let day = 1; day <= remainingCells; day++) {
+        const date = new Date(year, month + 1, day);
+        days.push({
+            day: day,
+            date: date,
+            isCurrentMonth: false,
+            isToday: false,
+            isSelected: false,
+            hasEvents: false
+        });
     }
 
-    return weeks;
+    return days;
+}
+
+/**
+ * Render day detail card
+ */
+function renderDayCard() {
+    const container = d3.select('#day-detail-card');
+    container.html(''); // Clear previous content
+
+    const selectedDate = calendarState.selectedDate;
+    const dateString = selectedDate.toISOString().split('T')[0];
+    const dayEvents = calendarState.events.filter(e => e.event_date === dateString);
+
+    // Header
+    const header = container
+        .append('div')
+        .attr('class', 'day-detail-header');
+
+    const dateDiv = header
+        .append('div')
+        .attr('class', 'day-detail-date');
+
+    dateDiv
+        .append('div')
+        .attr('class', 'day-detail-number')
+        .text(selectedDate.getDate());
+
+    dateDiv
+        .append('div')
+        .attr('class', 'day-detail-weekday')
+        .text(selectedDate.toLocaleDateString('en-US', { weekday: 'long' }));
+
+    header
+        .append('div')
+        .attr('class', 'day-detail-full-date')
+        .text(selectedDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }));
+
+    // Events section
+    const eventsSection = container
+        .append('div')
+        .attr('class', 'day-detail-events');
+
+    if (dayEvents.length > 0) {
+        eventsSection
+            .append('div')
+            .attr('class', 'day-detail-events-title')
+            .text(`Events (${dayEvents.length})`);
+
+        dayEvents.forEach(event => {
+            const eventDiv = eventsSection
+                .append('div')
+                .attr('class', `day-detail-event ${event.event_type}`);
+
+            const icon = getEventIcon(event.event_type);
+            eventDiv
+                .append('div')
+                .attr('class', 'day-detail-event-icon')
+                .text(icon);
+
+            const content = eventDiv
+                .append('div')
+                .attr('class', 'day-detail-event-content');
+
+            content
+                .append('div')
+                .attr('class', 'day-detail-event-title')
+                .text(event.title);
+
+            content
+                .append('div')
+                .attr('class', 'day-detail-event-type')
+                .text(event.event_type);
+        });
+    } else {
+        eventsSection
+            .append('div')
+            .attr('class', 'day-detail-empty')
+            .text('No events scheduled for this day');
+    }
+}
+
+/**
+ * Get event icon by type
+ *
+ * @param {string} eventType - Event type
+ * @returns {string} - Emoji icon
+ */
+function getEventIcon(eventType) {
+    const icons = {
+        watch: '🎬',
+        release: '🎉',
+        review: '✍️',
+        custom: '📅'
+    };
+    return icons[eventType] || icons.custom;
+}
+
+/**
+ * Handle day cell click
+ *
+ * @param {Object} dayData - Day data
+ */
+function handleDayClick(dayData) {
+    if (!dayData.isCurrentMonth) {
+        // Change month if clicking on adjacent month days
+        const newMonth = new Date(calendarState.currentDate);
+        if (dayData.day > 15) {
+            newMonth.setMonth(newMonth.getMonth() - 1);
+        } else {
+            newMonth.setMonth(newMonth.getMonth() + 1);
+        }
+        calendarState.currentDate = newMonth;
+        calendarState.selectedDate = new Date(dayData.date);
+
+        triggerPageTurn('forward');
+        setTimeout(() => {
+            loadCalendarData();
+        }, 50);
+    } else {
+        // Same month - just update selection
+        const direction = dayData.date > calendarState.selectedDate ? 'forward' : 'backward';
+        calendarState.selectedDate = new Date(dayData.date);
+
+        triggerPageTurn(direction);
+        setTimeout(() => {
+            updateMonthGridSelection();
+            renderDayCard();
+        }, 50);
+    }
 }
 
 /**
@@ -248,280 +473,40 @@ function isToday(date) {
 }
 
 /**
- * Render day names header
+ * Check if two dates are the same day
  *
- * @param {Object} container - D3 selection
+ * @param {Date} date1 - First date
+ * @param {Date} date2 - Second date
+ * @returns {boolean} - True if same day
  */
-function renderDayNames(container) {
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-    const dayNamesContainer = container
-        .append('div')
-        .attr('class', 'calendar-day-names');
-
-    dayNamesContainer
-        .selectAll('.day-name')
-        .data(dayNames)
-        .enter()
-        .append('div')
-        .attr('class', 'day-name')
-        .text(d => d);
+function isSameDay(date1, date2) {
+    return date1.toDateString() === date2.toDateString();
 }
 
 /**
- * Render calendar grid
+ * Jump to specific date
  *
- * @param {Object} container - D3 selection
- * @param {Array} weeks - Calendar weeks data
+ * @param {Date} date - Date to jump to
  */
-function renderCalendarGrid(container, weeks) {
-    const gridContainer = container
-        .append('div')
-        .attr('class', 'calendar-grid');
-
-    // Flatten weeks into days
-    const allDays = weeks.flat();
-
-    // Create day cells
-    const dayCells = gridContainer
-        .selectAll('.calendar-day')
-        .data(allDays)
-        .enter()
-        .append('div')
-        .attr('class', d => {
-            let classes = 'calendar-day';
-            if (!d.isCurrentMonth) classes += ' other-month';
-            if (d.isToday) classes += ' today';
-            if (d.events.length > 0) classes += ' has-events';
-            return classes;
-        })
-        .on('click', (event, d) => handleDayClick(d));
-
-    // Add day number
-    dayCells
-        .append('div')
-        .attr('class', 'day-number')
-        .text(d => d.day);
-
-    // Add event indicators
-    dayCells.each(function(d) {
-        const cell = d3.select(this);
-
-        if (d.events.length > 0) {
-            const eventsContainer = cell
-                .append('div')
-                .attr('class', 'day-events');
-
-            // Add event indicator bars (max 3 visible)
-            d.events.slice(0, 3).forEach(event => {
-                eventsContainer
-                    .append('div')
-                    .attr('class', `event-indicator ${event.event_type}`)
-                    .style('background-color', event.color);
-            });
-
-            // Add icon if there are events
-            if (d.events.length > 0) {
-                const iconsContainer = cell
-                    .append('div')
-                    .attr('class', 'day-icons');
-
-                iconsContainer
-                    .append('div')
-                    .attr('class', 'event-icon')
-                    .text('📅');
-            }
-        }
-    });
-
-    // Add entrance animation
-    dayCells
-        .style('opacity', 0)
-        .transition()
-        .duration(300)
-        .delay((d, i) => i * 10)
-        .style('opacity', 1);
+export function jumpToDate(date) {
+    calendarState.selectedDate = new Date(date);
+    calendarState.currentDate = new Date(date);
+    loadCalendarData();
 }
 
 /**
- * Handle day cell click
- *
- * @param {Object} dayData - Day data
+ * Refresh calendar data
  */
-function handleDayClick(dayData) {
-    if (!dayData.isCurrentMonth) {
-        return;
-    }
-
-    carouselState.selectedDate = dayData.date;
-
-    // Remove previous selection
-    d3.selectAll('.calendar-day').classed('selected', false);
-
-    // Add selection to clicked day
-    d3.selectAll('.calendar-day')
-        .filter(d => d === dayData)
-        .classed('selected', true);
-
-    // Show event detail modal if there are events
-    if (dayData.events.length > 0) {
-        showEventDetailModal(dayData);
-    } else {
-        // Show add event option
-        console.log('📅 No events for this day, show add event option');
-        // TODO: Implement add event modal
-    }
+export function refreshCalendar() {
+    loadCalendarData();
 }
 
-/**
- * Show event detail modal
- *
- * @param {Object} dayData - Day data with events
- */
-function showEventDetailModal(dayData) {
-    // Remove existing modal if any
-    d3.select('.event-detail-overlay').remove();
-
-    const overlay = d3.select('body')
-        .append('div')
-        .attr('class', 'event-detail-overlay')
-        .on('click', function(event) {
-            if (event.target === this) {
-                closeEventDetailModal();
-            }
-        });
-
-    const modal = overlay
-        .append('div')
-        .attr('class', 'event-detail-modal');
-
-    // Header
-    const header = modal
-        .append('div')
-        .attr('class', 'event-detail-header');
-
-    header
-        .append('h3')
-        .attr('class', 'event-detail-title')
-        .text(dayData.date.toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        }));
-
-    header
-        .append('button')
-        .attr('class', 'close-button')
-        .html('×')
-        .on('click', closeEventDetailModal);
-
-    // Content
-    const content = modal
-        .append('div')
-        .attr('class', 'event-detail-content');
-
-    const eventList = content
-        .append('div')
-        .attr('class', 'event-list');
-
-    // Render events
-    const eventItems = eventList
-        .selectAll('.event-item')
-        .data(dayData.events)
-        .enter()
-        .append('div')
-        .attr('class', d => `event-item ${d.event_type}`);
-
-    eventItems.each(function(event) {
-        const item = d3.select(this);
-
-        const info = item
-            .append('div')
-            .attr('class', 'event-item-info');
-
-        info
-            .append('h4')
-            .text(event.title);
-
-        info
-            .append('p')
-            .text(`Type: ${event.event_type}`);
-
-        if (event.description) {
-            info
-                .append('p')
-                .text(event.description);
-        }
-    });
+// Auto-initialize when module loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCalendar);
+} else {
+    initCalendar();
 }
-
-/**
- * Close event detail modal
- */
-function closeEventDetailModal() {
-    d3.select('.event-detail-overlay')
-        .transition()
-        .duration(200)
-        .style('opacity', 0)
-        .remove();
-}
-
-/**
- * Render calendar heatmap view (alternative visualization)
- */
-export function renderHeatmapView() {
-    const container = d3.select('#calendar-container');
-    container.html('');
-
-    // Create heatmap for year view
-    const year = calendarState.currentDate.getFullYear();
-    const weeks = 52;
-
-    const heatmapContainer = container
-        .append('div')
-        .attr('class', 'calendar-heatmap');
-
-    // Generate year data
-    const yearData = [];
-    for (let week = 0; week < weeks; week++) {
-        for (let day = 0; day < 7; day++) {
-            const date = new Date(year, 0, 1 + week * 7 + day);
-            if (date.getFullYear() === year) {
-                const dateString = date.toISOString().split('T')[0];
-                const dayEvents = calendarState.events.filter(e => e.event_date === dateString);
-
-                yearData.push({
-                    date: date,
-                    week: week,
-                    day: day,
-                    intensity: Math.min(dayEvents.length, 5),
-                    events: dayEvents
-                });
-            }
-        }
-    }
-
-    // Render heatmap cells
-    const cells = heatmapContainer
-        .selectAll('.heatmap-cell')
-        .data(yearData)
-        .enter()
-        .append('div')
-        .attr('class', d => `heatmap-cell intensity-${d.intensity}`)
-        .attr('title', d => {
-            const dateStr = d.date.toLocaleDateString();
-            return d.events.length > 0
-                ? `${dateStr}: ${d.events.length} event(s)`
-                : dateStr;
-        })
-        .on('click', (event, d) => handleDayClick(d));
-
-    console.log('🔥 Heatmap view rendered');
-}
-
-// Initialize calendar when module loads
-initCalendar();
 
 // Export functions
-export { loadCalendarData, renderCalendar, changeMonth };
+export { initCalendar as default, loadCalendarData };

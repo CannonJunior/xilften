@@ -300,6 +300,6 @@ if __name__ == "__main__":
         "backend.server:app",
         host=settings.app_host,
         port=settings.app_port,
-        reload=settings.debug,
+        reload=False,  # Disabled auto-reload
         log_level=settings.log_level.lower(),
     )

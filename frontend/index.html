@@ -25,7 +25,6 @@
                 <p class="app-subtitle">Media Scheduling & Discovery</p>
                 <nav class="main-nav">
                     <button class="nav-button active" data-view="carousel">Browse</button>
-                    <button class="nav-button" data-view="calendar">Calendar</button>
                     <button class="nav-button" data-view="recommendations">Recommendations</button>
                     <button class="nav-button" data-view="ai">AI Assistant</button>
                 </nav>
@@ -34,6 +33,28 @@
 
         <!-- Main Content Area -->
         <main class="app-main">
+            <!-- Calendar Sidebar -->
+            <aside id="calendar-sidebar" class="calendar-sidebar">
+                <!-- Month Calendar Grid -->
+                <div class="calendar-month-container">
+                    <div class="calendar-month-header">
+                        <span id="calendar-month-year" class="calendar-month-year">November 2025</span>
+                    </div>
+                    <div id="calendar-month-grid" class="calendar-month-grid">
+                        <!-- Month grid will be rendered here by D3.js -->
+                    </div>
+                </div>
+
+                <!-- Single Day Card -->
+                <div class="day-detail-container">
+                    <div id="day-detail-card" class="day-detail-card">
+                        <!-- Day details will be rendered here by D3.js -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Container -->
+            <div class="main-content-wrapper">
             <!-- Carousel View -->
             <section id="carousel-view" class="view-section active">
                 <div class="section-header">
@@ -54,36 +75,6 @@
                 <div id="media-carousel" class="carousel-container">
                     <!-- D3.js carousel will be rendered here -->
                     <p class="loading-message">Loading media...</p>
-                </div>
-            </section>
-
-            <!-- Calendar View -->
-            <section id="calendar-view" class="view-section">
-                <div class="section-header">
-                    <h2>Calendar</h2>
-                    <div class="view-controls">
-                        <button id="prev-month" class="calendar-nav-button">← Previous</button>
-                        <span id="current-month" class="current-month">November 2025</span>
-                        <button id="next-month" class="calendar-nav-button">Next →</button>
-                    </div>
-                </div>
-                <div id="calendar-container" class="calendar-container">
-                    <!-- D3.js calendar will be rendered here -->
-                    <p class="loading-message">Loading calendar...</p>
-                </div>
-                <div class="calendar-legend">
-                    <div class="legend-item">
-                        <span class="legend-color" style="background-color: #FF6B6B;"></span>
-                        <span class="legend-label">Watch Date</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background-color: #4ECDC4;"></span>
-                        <span class="legend-label">New Release</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background-color: #95E1D3;"></span>
-                        <span class="legend-label">Review Date</span>
-                    </div>
                 </div>
             </section>
 
@@ -135,6 +126,7 @@
                     </div>
                 </div>
             </section>
+            </div><!-- End main-content-wrapper -->
         </main>
 
         <!-- Footer -->
