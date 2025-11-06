@@ -6,6 +6,8 @@
 import * as api from './api-client.js';
 import * as recommendations from './recommendations.js';
 import * as criteriaBuilder from './criteria-builder.js';
+import { init3DVisualization } from './3d-criteria-viz.js';
+import { initPersonaManager } from './persona-manager.js';
 
 /**
  * Application state
@@ -41,6 +43,9 @@ async function initApp() {
 
     // Initialize modules
     await criteriaBuilder.init();
+
+    // Initialize persona manager
+    await initPersonaManager();
 
     // Setup event listeners
     setupEventListeners();
@@ -113,6 +118,10 @@ async function initializeView(viewName) {
             break;
         case 'ai':
             console.log('🤖 Initializing AI assistant view...');
+            break;
+        case 'criteria-3d':
+            console.log('🎬 Initializing 3D visualization...');
+            init3DVisualization();
             break;
     }
 }

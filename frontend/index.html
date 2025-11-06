@@ -27,6 +27,7 @@
                     <button class="nav-button active" data-view="carousel">Browse</button>
                     <button class="nav-button" data-view="recommendations">Recommendations</button>
                     <button class="nav-button" data-view="ai">AI Assistant</button>
+                    <button class="nav-button" data-view="criteria-3d">3D Space</button>
                 </nav>
             </div>
         </header>
@@ -103,6 +104,26 @@
                     <h2>AI Assistant</h2>
                     <p class="section-description">Create mashups and get creative recommendations</p>
                 </div>
+
+                <!-- Persona Selector -->
+                <div class="persona-selector-container">
+                    <div class="persona-selector">
+                        <label for="persona-select">Critic Persona:</label>
+                        <select id="persona-select" class="persona-select">
+                            <option value="">No Persona (Default AI)</option>
+                            <!-- Personas will be loaded dynamically -->
+                        </select>
+                        <button id="clear-cache-btn" class="secondary-button">Clear Cache</button>
+                    </div>
+                    <div id="cache-metrics" class="cache-metrics">
+                        <span class="cache-label">CAG Cache:</span>
+                        <span id="cache-usage" class="cache-usage">0 MB / 10 MB</span>
+                        <div class="cache-bar">
+                            <div id="cache-bar-fill" class="cache-bar-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="ai-chat-container" class="chat-container">
                     <div id="chat-messages" class="chat-messages">
                         <div class="chat-message assistant">
@@ -113,6 +134,7 @@
                                 <li>Discover hidden gems in your favorite categories</li>
                             </ul>
                             <p>Try asking: "Suggest a movie with fantasy action like World of Warcraft but serious drama like Chernobyl"</p>
+                            <p><strong>New!</strong> Select a critic persona above to get reviews in their style.</p>
                         </div>
                     </div>
                     <div class="chat-input-container">
@@ -124,6 +146,21 @@
                         <button class="preset-button" data-query="witty dialogue + action + plot-driven">Dialogue + Action + Plot</button>
                         <button class="preset-button" data-query="underrated Iranian films 1970s">Iranian Cinema 1970s</button>
                     </div>
+                </div>
+            </section>
+
+            <!-- 3D Criteria Visualization View -->
+            <section id="criteria-3d-view" class="view-section">
+                <div class="section-header">
+                    <h2>3D Movie Space</h2>
+                    <p class="section-description">Movies visualized by Storytelling, Characters, and Vision</p>
+                </div>
+                <div id="criteria-3d-viz" class="criteria-3d-container">
+                    <!-- 3D visualization will be rendered here -->
+                </div>
+                <div class="criteria-3d-instructions">
+                    <p><strong>Controls:</strong> Click and drag to rotate the space</p>
+                    <p><strong>Axes:</strong> <span style="color: #ef4444;">Red = Storytelling</span> | <span style="color: #10b981;">Green = Characters</span> | <span style="color: #3b82f6;">Blue = Vision</span></p>
                 </div>
             </section>
             </div><!-- End main-content-wrapper -->
@@ -144,5 +181,7 @@
     <script type="module" src="/static/js/recommendations.js"></script>
     <script type="module" src="/static/js/criteria-builder.js"></script>
     <script type="module" src="/static/js/ai-interface.js"></script>
+    <script type="module" src="/static/js/3d-criteria-viz.js"></script>
+    <script type="module" src="/static/js/persona-manager.js"></script>
 </body>
 </html>
