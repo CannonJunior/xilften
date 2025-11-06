@@ -46,12 +46,15 @@ export function initCalendar() {
 
 /**
  * Setup mousewheel scrolling for day navigation
+ * Enhanced with 3x speed and momentum-based hard scroll detection
  */
 function setupMousewheelScrolling() {
     const sidebar = document.getElementById('calendar-sidebar');
     if (!sidebar) return;
 
     let scrollTimeout;
+    let lastScrollTime = 0;
+    let scrollVelocity = 0;
 
     sidebar.addEventListener('wheel', (event) => {
         event.preventDefault();
@@ -61,8 +64,31 @@ function setupMousewheelScrolling() {
             return;
         }
 
+        // Calculate scroll velocity for momentum detection
+        const currentTime = Date.now();
+        const timeDelta = currentTime - lastScrollTime;
+        lastScrollTime = currentTime;
+
+        // Detect hard scroll based on deltaY magnitude and timing
+        const absDelta = Math.abs(event.deltaY);
+        const isHardScroll = absDelta > 100 || (timeDelta < 50 && absDelta > 50);
+
+        // Calculate days to scroll:
+        // - Base speed: 3x (3 days per normal scroll)
+        // - Hard scroll: 30+ days (full month flip)
+        let daysToScroll;
+
+        if (isHardScroll) {
+            // Hard scroll: jump through 30-60 days based on velocity
+            daysToScroll = Math.min(60, Math.max(30, Math.floor(absDelta / 3)));
+        } else {
+            // Normal scroll: 3x base speed (3 days)
+            daysToScroll = 3;
+        }
+
         // Determine scroll direction
-        const delta = Math.sign(event.deltaY);
+        const direction = Math.sign(event.deltaY);
+        const delta = direction * daysToScroll;
 
         // Change selected date by delta days
         const newDate = new Date(calendarState.selectedDate);
@@ -78,10 +104,10 @@ function setupMousewheelScrolling() {
         }
 
         // Trigger page turn animation
-        const direction = delta > 0 ? 'forward' : 'backward';
-        triggerPageTurn(direction);
+        const animDirection = direction > 0 ? 'forward' : 'backward';
+        triggerPageTurn(animDirection);
 
-        // Debounce the rendering - 16ms for 3x faster (~60fps)
+        // Debounce the rendering for smooth scrolling
         clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
             if (crossedMonth) {
