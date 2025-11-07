@@ -13,7 +13,6 @@ let carouselState = {
     gap: 24,
     isScrolling: false,
     container: null,
-    svg: null,
 };
 
 /**
@@ -49,130 +48,77 @@ function renderCarousel(items) {
     const container = d3.select('#media-carousel');
     container.html(''); // Clear previous content
 
-    // Create carousel structure
+    // Create carousel structure with simple HTML
     const carouselWrapper = container
         .append('div')
-        .attr('class', 'carousel-viewport');
+        .attr('class', 'carousel-wrapper')
+        .style('display', 'flex')
+        .style('gap', '24px')
+        .style('padding', '40px')
+        .style('justify-content', 'center')
+        .style('flex-wrap', 'wrap');
 
-    // Calculate total width needed to show all items
-    const itemWidth = carouselState.itemWidth;
-    const gap = carouselState.gap;
-    const totalItemsWidth = items.length * itemWidth + (items.length - 1) * gap;
-    const containerWidth = container.node().getBoundingClientRect().width;
-    const containerHeight = 600;
-
-    // Calculate actual SVG width - ensure enough space for all items
-    const paddingX = 100; // Padding on each side
-    const svgWidth = Math.max(containerWidth, totalItemsWidth + paddingX * 2);
-
-    const svg = carouselWrapper
-        .append('svg')
-        .attr('width', svgWidth)
-        .attr('height', containerHeight)
-        .attr('class', 'carousel-svg')
-        .style('display', 'block')
-        .style('margin', '0 auto');
-
-    carouselState.svg = svg;
     carouselState.container = container;
 
-    // Create group for items - center all items together
-    const startX = (svgWidth - totalItemsWidth) / 2;
-    const itemsGroup = svg
-        .append('g')
-        .attr('class', 'carousel-items-group')
-        .attr('transform', `translate(${startX}, 40)`);
-
-    // Render items
-    renderItems(itemsGroup, items);
-
-    // Add navigation buttons (optional - for scrolling between items)
-    if (items.length > 3) {
-        addNavigationButtons(container);
-    }
-
-    // Add thumbnail strip (optional - for many items)
-    if (items.length > 5) {
-        addThumbnailStrip(container, items);
-    }
-
-    console.log(`✅ Carousel rendered with ${items.length} items`);
-}
-
-/**
- * Render carousel items with D3
- *
- * @param {Object} group - D3 selection group
- * @param {Array} items - Media items
- */
-function renderItems(group, items) {
-    const itemWidth = carouselState.itemWidth;
-    const gap = carouselState.gap;
-
-    // Bind data
-    const itemGroups = group
-        .selectAll('.carousel-item-group')
+    // Render items as HTML divs
+    const itemDivs = carouselWrapper
+        .selectAll('.carousel-item')
         .data(items, d => d.id)
         .enter()
-        .append('g')
-        .attr('class', 'carousel-item-group')
+        .append('div')
+        .attr('class', 'carousel-item')
         .attr('data-media-id', d => d.id)
-        .attr('transform', (d, i) => {
-            const x = i * (itemWidth + gap);
-            return `translate(${x}, 0)`;
-        })
+        .style('width', '280px')
+        .style('cursor', 'pointer')
         .style('opacity', 0);
 
     // Animate entrance
-    itemGroups
+    itemDivs
         .transition()
         .duration(300)
         .delay((d, i) => i * 50)
         .style('opacity', 1);
 
-    // Create foreign object for HTML content
-    const foreignObjects = itemGroups
-        .append('foreignObject')
-        .attr('width', itemWidth)
-        .attr('height', 500)
-        .attr('class', 'carousel-item-wrapper');
+    // Build each item
+    itemDivs.each(function(d) {
+        const item = d3.select(this);
 
-    // Add HTML content using foreignObject
-    foreignObjects.each(function(d, i) {
-        const fo = d3.select(this);
-        const div = fo.append('xhtml:div')
-            .attr('class', `carousel-item ${i === 0 ? 'active' : ''}`)
-            .attr('data-media-id', d.id)
-            .style('cursor', 'pointer');
-
-        // Poster image
-        const posterDiv = div.append('div')
+        // Poster wrapper
+        const posterWrapper = item.append('div')
             .attr('class', 'media-poster-wrapper');
 
         if (d.poster_path) {
-            posterDiv.append('img')
+            posterWrapper.append('img')
                 .attr('class', 'media-poster')
                 .attr('src', getTMDBImageURL(d.poster_path, 'w500'))
                 .attr('alt', d.title)
                 .on('error', function() {
                     d3.select(this.parentNode)
-                        .html(`<div class="media-poster loading">${d.title}</div>`);
+                        .html(`<div class="media-poster loading" style="height: 420px; display: flex; align-items: center; justify-content: center; background: #2a2a3e;">${d.title}</div>`);
                 });
         } else {
-            posterDiv.html(`<div class="media-poster loading">${d.title}</div>`);
+            posterWrapper.html(`<div class="media-poster loading" style="height: 420px; display: flex; align-items: center; justify-content: center; background: #2a2a3e;">${d.title}</div>`);
         }
 
         // Media info
-        const infoDiv = div.append('div')
-            .attr('class', 'media-info');
+        const infoDiv = item.append('div')
+            .attr('class', 'media-info')
+            .style('padding', '16px');
 
         infoDiv.append('h3')
             .attr('class', 'media-title')
+            .style('margin', '0 0 8px 0')
+            .style('font-size', '18px')
             .text(d.title);
 
         // Meta information
         const metaDiv = infoDiv.append('div')
-            .attr('class', 'media-meta');
+            .attr('class', 'media-meta')
+            .style('display', 'flex')
+            .style('gap', '12px')
+            .style('flex-wrap', 'wrap')
+            .style('font-size', '14px')
+            .style('color', '#a0a0b0');
 
         if (d.release_date) {
             const year = new Date(d.release_date).getFullYear();
@@ -192,27 +138,34 @@ function renderItems(group, items) {
                 .attr('class', 'media-rating');
 
             ratingSpan.append('span')
-                .html('⭐');
+                .html('⭐ ');
 
             ratingSpan.append('span')
-                .text(d.tmdb_rating.toFixed(1));
+                .text(parseFloat(d.tmdb_rating).toFixed(1));
         }
 
         // Genres
         if (d.genres && d.genres.length > 0) {
             const genresDiv = infoDiv.append('div')
-                .attr('class', 'media-genres');
+                .attr('class', 'media-genres')
+                .style('display', 'flex')
+                .style('gap', '8px')
+                .style('margin-top', '8px')
+                .style('flex-wrap', 'wrap');
 
             d.genres.slice(0, 3).forEach(genre => {
                 genresDiv.append('span')
                     .attr('class', 'genre-tag')
+                    .style('padding', '4px 12px')
+                    .style('background', '#3a3a5e')
+                    .style('border-radius', '12px')
+                    .style('font-size', '12px')
                     .text(typeof genre === 'string' ? genre : genre.name);
             });
         }
     });
 
-    // Make all items visible (not just first one)
-    updateActiveItem(0);
+    console.log(`✅ Carousel rendered with ${items.length} items`);
 }
 
 /**
@@ -225,223 +178,9 @@ function setupMousewheelScroll() {
     let scrollTimeout;
 
     container.addEventListener('wheel', (event) => {
-        // Only handle horizontal scroll
-        if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-            event.preventDefault();
-
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                carouselState.isScrolling = false;
-            }, 150);
-
-            if (!carouselState.isScrolling) {
-                carouselState.isScrolling = true;
-
-                if (event.deltaY > 0) {
-                    // Scroll down = next item
-                    scrollToNext();
-                } else {
-                    // Scroll up = previous item
-                    scrollToPrevious();
-                }
-            }
-        }
-    }, { passive: false });
-}
-
-/**
- * Scroll to next item
- */
-function scrollToNext() {
-    const maxIndex = carouselState.items.length - 1;
-    if (carouselState.currentIndex < maxIndex) {
-        carouselState.currentIndex++;
-        updateCarouselPosition();
-        updateActiveItem(carouselState.currentIndex);
-    }
-}
-
-/**
- * Scroll to previous item
- */
-function scrollToPrevious() {
-    if (carouselState.currentIndex > 0) {
-        carouselState.currentIndex--;
-        updateCarouselPosition();
-        updateActiveItem(carouselState.currentIndex);
-    }
-}
-
-/**
- * Scroll to specific index
- *
- * @param {number} index - Target index
- */
-function scrollToIndex(index) {
-    if (index >= 0 && index < carouselState.items.length) {
-        carouselState.currentIndex = index;
-        updateCarouselPosition();
-        updateActiveItem(index);
-    }
-}
-
-/**
- * Update carousel position with animation
- */
-function updateCarouselPosition() {
-    const itemWidth = carouselState.itemWidth;
-    const gap = carouselState.gap;
-    const containerWidth = carouselState.container.node().getBoundingClientRect().width;
-    const centerOffset = (containerWidth - itemWidth) / 2;
-
-    const targetX = -carouselState.currentIndex * (itemWidth + gap) + centerOffset;
-
-    carouselState.svg
-        .select('.carousel-items-group')
-        .transition()
-        .duration(500)
-        .ease(d3.easeCubicOut)
-        .attr('transform', `translate(${targetX}, 40)`);
-
-    // Update navigation button states
-    updateNavigationButtons();
-}
-
-/**
- * Update active item styling
- *
- * @param {number} index - Active item index
- */
-function updateActiveItem(index) {
-    // Remove active class from all items
-    d3.selectAll('.carousel-item')
-        .classed('active', false);
-
-    // Add active class to current item
-    d3.selectAll('.carousel-item')
-        .filter((d, i) => i === index)
-        .classed('active', true);
-
-    // Update thumbnail strip
-    updateThumbnailActive(index);
-}
-
-/**
- * Add navigation buttons
- *
- * @param {Object} container - D3 selection
- */
-function addNavigationButtons(container) {
-    // Previous button
-    const prevButton = container
-        .append('div')
-        .attr('class', 'carousel-nav prev');
-
-    prevButton
-        .append('button')
-        .attr('class', 'carousel-nav-button')
-        .attr('id', 'carousel-prev')
-        .html('←')
-        .on('click', scrollToPrevious);
-
-    // Next button
-    const nextButton = container
-        .append('div')
-        .attr('class', 'carousel-nav next');
-
-    nextButton
-        .append('button')
-        .attr('class', 'carousel-nav-button')
-        .attr('id', 'carousel-next')
-        .html('→')
-        .on('click', scrollToNext);
-
-    updateNavigationButtons();
-}
-
-/**
- * Update navigation button states
- */
-function updateNavigationButtons() {
-    const prevButton = d3.select('#carousel-prev');
-    const nextButton = d3.select('#carousel-next');
-
-    // Disable prev if at start
-    if (carouselState.currentIndex === 0) {
-        prevButton.attr('disabled', true);
-    } else {
-        prevButton.attr('disabled', null);
-    }
-
-    // Disable next if at end
-    if (carouselState.currentIndex === carouselState.items.length - 1) {
-        nextButton.attr('disabled', true);
-    } else {
-        nextButton.attr('disabled', null);
-    }
-}
-
-/**
- * Add thumbnail strip
- *
- * @param {Object} container - D3 selection
- * @param {Array} items - Media items
- */
-function addThumbnailStrip(container, items) {
-    const thumbnailContainer = container
-        .append('div')
-        .attr('class', 'carousel-thumbnails');
-
-    const thumbnails = thumbnailContainer
-        .selectAll('.carousel-thumbnail')
-        .data(items, d => d.id)
-        .enter()
-        .append('div')
-        .attr('class', (d, i) => `carousel-thumbnail ${i === 0 ? 'active' : ''}`)
-        .on('click', (event, d) => {
-            const index = items.findIndex(item => item.id === d.id);
-            scrollToIndex(index);
-        });
-
-    thumbnails.each(function(d) {
-        const thumb = d3.select(this);
-
-        if (d.poster_path) {
-            thumb.append('img')
-                .attr('src', getTMDBImageURL(d.poster_path, 'w92'))
-                .attr('alt', d.title);
-        } else {
-            thumb.style('background-color', 'var(--color-surface)')
-                .style('display', 'flex')
-                .style('align-items', 'center')
-                .style('justify-content', 'center')
-                .style('font-size', '10px')
-                .style('color', 'var(--color-text-muted)')
-                .text(d.title.substring(0, 10));
-        }
-    });
-}
-
-/**
- * Update thumbnail active state
- *
- * @param {number} index - Active thumbnail index
- */
-function updateThumbnailActive(index) {
-    d3.selectAll('.carousel-thumbnail')
-        .classed('active', false)
-        .filter((d, i) => i === index)
-        .classed('active', true);
-}
-
-/**
- * Handle item click - Now handled by expanded-card.js via data-media-id
- *
- * @param {Object} item - Media item
- */
-function handleItemClick(item) {
-    console.log('🎬 Media clicked:', item.title);
-    // Expanded card will handle the click via global event delegation
+        // Allow natural scrolling if content overflows
+        // This is mainly for future when we have many items
+    }, { passive: true });
 }
 
 /**
@@ -466,41 +205,8 @@ function getTMDBImageURL(path, size = 'w500') {
     return `${baseURL}/${size}${path}`;
 }
 
-/**
- * Handle keyboard navigation
- */
-function setupKeyboardNavigation() {
-    document.addEventListener('keydown', (event) => {
-        // Only handle if carousel view is active
-        const carouselView = document.getElementById('carousel-view');
-        if (!carouselView || !carouselView.classList.contains('active')) {
-            return;
-        }
-
-        switch (event.key) {
-            case 'ArrowLeft':
-                event.preventDefault();
-                scrollToPrevious();
-                break;
-            case 'ArrowRight':
-                event.preventDefault();
-                scrollToNext();
-                break;
-            case 'Home':
-                event.preventDefault();
-                scrollToIndex(0);
-                break;
-            case 'End':
-                event.preventDefault();
-                scrollToIndex(carouselState.items.length - 1);
-                break;
-        }
-    });
-}
-
 // Initialize carousel when module loads
 initCarousel();
-setupKeyboardNavigation();
 
 // Export functions for external use
-export { renderCarousel, scrollToNext, scrollToPrevious, scrollToIndex };
+export { renderCarousel };
