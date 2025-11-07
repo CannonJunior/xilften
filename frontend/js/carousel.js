@@ -61,21 +61,23 @@ function renderCarousel(items) {
     const containerWidth = container.node().getBoundingClientRect().width;
     const containerHeight = 600;
 
-    // Use the larger of container width or total items width
-    const svgWidth = Math.max(containerWidth, totalItemsWidth + 100); // Add padding
+    // Calculate actual SVG width - ensure enough space for all items
+    const paddingX = 100; // Padding on each side
+    const svgWidth = Math.max(containerWidth, totalItemsWidth + paddingX * 2);
 
     const svg = carouselWrapper
         .append('svg')
-        .attr('width', '100%')
+        .attr('width', svgWidth)
         .attr('height', containerHeight)
-        .attr('viewBox', `0 0 ${svgWidth} ${containerHeight}`)
-        .attr('class', 'carousel-svg');
+        .attr('class', 'carousel-svg')
+        .style('display', 'block')
+        .style('margin', '0 auto');
 
     carouselState.svg = svg;
     carouselState.container = container;
 
     // Create group for items - center all items together
-    const startX = Math.max(50, (containerWidth - totalItemsWidth) / 2);
+    const startX = (svgWidth - totalItemsWidth) / 2;
     const itemsGroup = svg
         .append('g')
         .attr('class', 'carousel-items-group')
