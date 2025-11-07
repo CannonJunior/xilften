@@ -18,50 +18,17 @@ const cardState = {
 export function initExpandedCard() {
     console.log('🎬 Initializing Expanded Card...');
 
-    // Create card container
-    createCardContainer();
+    // Get reference to sidebar
+    cardState.container = document.getElementById('movie-info-sidebar');
 
     // Setup global click listener for media items
     setupClickListeners();
 
-    console.log('✅ Expanded Card initialized');
-}
-
-/**
- * Create card container element
- */
-function createCardContainer() {
-    const existing = document.getElementById('expanded-card-overlay');
-    if (existing) {
-        existing.remove();
+    // Setup close button
+    const closeButton = cardState.container?.querySelector('.sidebar-close');
+    if (closeButton) {
+        closeButton.addEventListener('click', closeExpandedCard);
     }
-
-    const overlay = document.createElement('div');
-    overlay.id = 'expanded-card-overlay';
-    overlay.className = 'expanded-card-overlay';
-    overlay.style.display = 'none';
-
-    overlay.innerHTML = `
-        <div class="expanded-card-container">
-            <button class="expanded-card-close" aria-label="Close">&times;</button>
-            <div class="expanded-card-content">
-                <!-- Content will be populated dynamically -->
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(overlay);
-    cardState.container = overlay;
-
-    // Close on overlay click
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            closeExpandedCard();
-        }
-    });
-
-    // Close button
-    overlay.querySelector('.expanded-card-close').addEventListener('click', closeExpandedCard);
 
     // ESC key to close
     document.addEventListener('keydown', (e) => {
@@ -69,6 +36,8 @@ function createCardContainer() {
             closeExpandedCard();
         }
     });
+
+    console.log('✅ Expanded Card initialized');
 }
 
 /**
@@ -114,15 +83,11 @@ function renderExpandedCard() {
     const media = cardState.currentMedia;
     if (!media) return;
 
-    const content = cardState.container.querySelector('.expanded-card-content');
+    const content = document.getElementById('movie-info-content');
+    if (!content) return;
 
     // Get TMDB data from custom fields
     const tmdbData = media.custom_fields?.tmdb_data || {};
-
-    // Build poster URL
-    const posterUrl = media.poster_path
-        ? `https://image.tmdb.org/t/p/w500${media.poster_path}`
-        : 'https://via.placeholder.com/300x450?text=No+Poster';
 
     // Format budget and box office
     const formatCurrency = (amount) => {
@@ -139,10 +104,6 @@ function renderExpandedCard() {
             <div class="infobox-header">
                 <h2>${media.title}</h2>
                 ${media.original_title !== media.title ? `<p class="original-title">${media.original_title}</p>` : ''}
-            </div>
-
-            <div class="infobox-image">
-                <img src="${posterUrl}" alt="${media.title} poster" />
             </div>
 
             <table class="infobox-table">
@@ -283,7 +244,6 @@ function openExpandedCard() {
     if (cardState.container) {
         cardState.container.style.display = 'flex';
         cardState.isOpen = true;
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
     }
 }
 
@@ -295,6 +255,5 @@ function closeExpandedCard() {
         cardState.container.style.display = 'none';
         cardState.isOpen = false;
         cardState.currentMedia = null;
-        document.body.style.overflow = ''; // Restore scrolling
     }
 }

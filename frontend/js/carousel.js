@@ -37,6 +37,8 @@ export function initCarousel() {
  * @param {Array} items - Media items to display
  */
 function renderCarousel(items) {
+    console.log('🎠 renderCarousel called with', items ? items.length : 0, 'items');
+
     if (!items || items.length === 0) {
         showEmptyState();
         return;
@@ -46,7 +48,15 @@ function renderCarousel(items) {
     carouselState.currentIndex = 0;
 
     const container = d3.select('#media-carousel');
-    container.html(''); // Clear previous content
+    console.log('📦 Container element:', container.node());
+    console.log('📋 Container HTML before cleanup:', container.node() ? container.node().innerHTML.substring(0, 200) : 'NULL');
+
+    // Remove only the carousel wrapper, preserve the count badge
+    container.selectAll('.carousel-wrapper').remove();
+    container.selectAll('.empty-message').remove();
+    container.selectAll('.loading-message').remove();
+
+    console.log('📋 Container HTML after cleanup:', container.node() ? container.node().innerHTML.substring(0, 200) : 'NULL');
 
     // Create carousel structure with horizontal scrolling
     const carouselWrapper = container
@@ -170,7 +180,29 @@ function renderCarousel(items) {
         }
     });
 
+    // Update carousel count
+    updateCarouselCount(items.length);
+
     console.log(`✅ Carousel rendered with ${items.length} items`);
+}
+
+/**
+ * Update carousel count badge
+ *
+ * @param {number} count - Number of items
+ */
+function updateCarouselCount(count) {
+    const countElement = document.getElementById('carousel-count');
+    console.log('🔢 updateCarouselCount called with count:', count);
+    console.log('🎯 Count element found:', countElement);
+    console.log('📍 Count element HTML:', countElement ? countElement.outerHTML : 'NULL');
+
+    if (countElement) {
+        countElement.textContent = count;
+        console.log('✅ Count updated to:', count);
+    } else {
+        console.error('❌ carousel-count element not found in DOM!');
+    }
 }
 
 /**
@@ -198,7 +230,19 @@ function setupMousewheelScroll() {
  */
 function showEmptyState() {
     const container = d3.select('#media-carousel');
-    container.html('<p class="empty-message">No media available. Try changing your filters.</p>');
+
+    // Remove previous content but preserve count badge
+    container.selectAll('.carousel-wrapper').remove();
+    container.selectAll('.empty-message').remove();
+    container.selectAll('.loading-message').remove();
+
+    // Add empty message
+    container.append('p')
+        .attr('class', 'empty-message')
+        .text('No media available. Try changing your filters.');
+
+    // Update count to 0
+    updateCarouselCount(0);
 }
 
 /**

@@ -51,6 +51,9 @@ async function initApp() {
     // Initialize expanded card
     initExpandedCard();
 
+    // Load genres for filter
+    await loadGenres();
+
     // Setup event listeners
     setupEventListeners();
 
@@ -180,6 +183,45 @@ function setupEventListeners() {
 }
 
 /**
+ * Load genres and populate filter dropdown
+ */
+async function loadGenres() {
+    console.log('🎭 Loading genres...');
+
+    try {
+        const response = await api.getGenres();
+
+        if (response.success && response.data) {
+            const genres = response.data;
+            const genreFilter = document.getElementById('filter-genre');
+
+            if (genreFilter) {
+                // Clear existing options except "All Genres"
+                genreFilter.innerHTML = '<option value="">All Genres</option>';
+
+                // Get parent genres only (genres without parent_genre_id)
+                const parentGenres = genres.filter(g => !g.parent_genre_id && g.is_active);
+
+                // Sort alphabetically
+                parentGenres.sort((a, b) => a.name.localeCompare(b.name));
+
+                // Add genre options
+                parentGenres.forEach(genre => {
+                    const option = document.createElement('option');
+                    option.value = genre.slug;
+                    option.textContent = genre.name;
+                    genreFilter.appendChild(option);
+                });
+
+                console.log(`✅ Loaded ${parentGenres.length} genres`);
+            }
+        }
+    } catch (error) {
+        console.error('❌ Failed to load genres:', error);
+    }
+}
+
+/**
  * Load initial data
  */
 async function loadInitialData() {
@@ -203,7 +245,7 @@ async function loadMedia() {
 
         const params = {
             page: 1,
-            page_size: 20,
+            page_size: 500,
         };
 
         if (appState.filters.genre) {
@@ -404,7 +446,25 @@ function appendChatMessage(role, content) {
 function showLoading(containerId) {
     const container = document.getElementById(containerId);
     if (container) {
-        container.innerHTML = '<p class="loading-message">Loading</p>';
+        // For media-carousel, preserve the count badge
+        if (containerId === 'media-carousel') {
+            // Remove existing content except count badge
+            const countBadge = container.querySelector('.carousel-count-badge');
+            container.innerHTML = '';
+
+            // Re-add count badge if it existed
+            if (countBadge) {
+                container.appendChild(countBadge);
+            }
+
+            // Add loading message
+            const loadingMsg = document.createElement('p');
+            loadingMsg.className = 'loading-message';
+            loadingMsg.textContent = 'Loading';
+            container.appendChild(loadingMsg);
+        } else {
+            container.innerHTML = '<p class="loading-message">Loading</p>';
+        }
     }
 }
 
@@ -420,7 +480,26 @@ function showError(message, containerId = null) {
     if (containerId) {
         const container = document.getElementById(containerId);
         if (container) {
-            container.innerHTML = `<p class="empty-message" style="color: var(--color-error);">${message}</p>`;
+            // For media-carousel, preserve the count badge
+            if (containerId === 'media-carousel') {
+                // Remove existing content except count badge
+                const countBadge = container.querySelector('.carousel-count-badge');
+                container.innerHTML = '';
+
+                // Re-add count badge if it existed
+                if (countBadge) {
+                    container.appendChild(countBadge);
+                }
+
+                // Add error message
+                const errorMsg = document.createElement('p');
+                errorMsg.className = 'empty-message';
+                errorMsg.style.color = 'var(--color-error)';
+                errorMsg.textContent = message;
+                container.appendChild(errorMsg);
+            } else {
+                container.innerHTML = `<p class="empty-message" style="color: var(--color-error);">${message}</p>`;
+            }
         }
     } else {
         // TODO: Implement global toast notification

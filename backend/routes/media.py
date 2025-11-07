@@ -28,7 +28,7 @@ router = APIRouter()
 @router.get("", response_model=dict)
 async def get_media_list(
     page: int = Query(1, ge=1, description="Page number"),
-    page_size: int = Query(20, ge=1, le=100, description="Items per page"),
+    page_size: int = Query(20, ge=1, le=500, description="Items per page"),
     media_type: Optional[str] = Query(None, description="Filter by media type"),
     genre: Optional[str] = Query(None, description="Filter by genre slug"),
     min_rating: Optional[float] = Query(None, ge=0.0, le=10.0),
@@ -93,7 +93,7 @@ async def get_media_list(
 async def search_media(
     q: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
-    page_size: int = Query(20, ge=1, le=100, description="Items per page"),
+    page_size: int = Query(20, ge=1, le=500, description="Items per page"),
 ):
     """
     Search media by title and overview.

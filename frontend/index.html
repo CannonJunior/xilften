@@ -74,6 +74,9 @@
                     </div>
                 </div>
                 <div id="media-carousel" class="carousel-container">
+                    <div class="carousel-count-badge">
+                        <span id="carousel-count">0</span> movies
+                    </div>
                     <!-- D3.js carousel will be rendered here -->
                     <p class="loading-message">Loading media...</p>
                 </div>
@@ -164,6 +167,14 @@
                 </div>
             </section>
             </div><!-- End main-content-wrapper -->
+
+            <!-- Movie Info Sidebar -->
+            <aside id="movie-info-sidebar" class="movie-info-sidebar" style="display: none;">
+                <button class="sidebar-close" aria-label="Close">&times;</button>
+                <div id="movie-info-content" class="movie-info-content">
+                    <!-- Content will be populated dynamically -->
+                </div>
+            </aside>
         </main>
 
         <!-- Footer -->

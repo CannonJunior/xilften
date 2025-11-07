@@ -211,6 +211,45 @@ body {
     gap: var(--spacing-xl);
 }
 
+/* ========== Movie Info Sidebar ========== */
+.movie-info-sidebar {
+    width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    background-color: var(--color-bg-primary);
+    overflow-y: auto;
+    position: relative;
+}
+
+.movie-info-sidebar .sidebar-close {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    background: none;
+    border: none;
+    color: var(--color-text-primary);
+    font-size: 32px;
+    cursor: pointer;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.movie-info-sidebar .sidebar-close:hover {
+    background-color: var(--color-bg-secondary);
+    transform: scale(1.1);
+}
+
+.movie-info-content {
+    padding: var(--spacing-lg);
+}
+
 /* Month Calendar Grid */
 .calendar-month-container {
     background-color: var(--color-bg-secondary);
