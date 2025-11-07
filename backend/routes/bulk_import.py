@@ -3,11 +3,14 @@ Bulk Import Routes
 API endpoints for bulk importing media from external sources
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 import uuid
 import random
+import requests
+import re
+import json
 from datetime import datetime
 import logging
 
@@ -190,4 +193,195 @@ async def import_tmdb_movies(movies: List[TMDBMovieImport]):
 
     except Exception as e:
         logger.error(f"Bulk import failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# LLM EVALUATION ENDPOINT
+# ============================================================================
+
+OLLAMA_URL = "http://localhost:11434"
+OLLAMA_MODEL = "qwen2.5:3b"
+
+EVALUATION_SYSTEM_PROMPT = """You are an expert film critic and analyst. Your task is to evaluate movies on three specific criteria, rating each from 0-10.
+
+**Criteria Definitions:**
+
+1. **Storytelling (0-10)**: Narrative structure, plot coherence, pacing, story arc, emotional impact through narrative
+   - 0-3: Poor/incoherent story
+   - 4-6: Functional but unremarkable
+   - 7-8: Strong, well-crafted narrative
+   - 9-10: Masterful storytelling
+
+2. **Characters (0-10)**: Character development, depth, believability, memorable performances, emotional connection
+   - 0-3: Flat/forgettable characters
+   - 4-6: Adequate character work
+   - 7-8: Well-developed, engaging characters
+   - 9-10: Iconic, deeply realized characters
+
+3. **Cohesive Vision (0-10)**: Visual style, thematic consistency, directorial vision, world-building, artistic unity
+   - 0-3: Inconsistent or lacking vision
+   - 4-6: Competent but generic
+   - 7-8: Strong, distinctive style
+   - 9-10: Visionary, groundbreaking
+
+Respond ONLY with three numbers separated by commas, in this exact format: storytelling,characters,vision
+Example: 8.5,7.0,9.2"""
+
+
+def call_ollama_for_evaluation(prompt: str) -> str:
+    """Call Ollama API for movie evaluation"""
+    url = f"{OLLAMA_URL}/api/generate"
+
+    payload = {
+        "model": OLLAMA_MODEL,
+        "prompt": prompt,
+        "system": EVALUATION_SYSTEM_PROMPT,
+        "stream": False,
+        "options": {
+            "temperature": 0.3,
+            "top_p": 0.9,
+        }
+    }
+
+    response = requests.post(url, json=payload, timeout=60)
+    response.raise_for_status()
+
+    result = response.json()
+    return result.get("response", "").strip()
+
+
+def parse_evaluation_scores(response: str) -> Optional[tuple]:
+    """Parse LLM response to extract three scores"""
+    pattern = r'(\d+\.?\d*)\s*,\s*(\d+\.?\d*)\s*,\s*(\d+\.?\d*)'
+    match = re.search(pattern, response)
+
+    if match:
+        try:
+            storytelling = float(match.group(1))
+            characters = float(match.group(2))
+            vision = float(match.group(3))
+
+            if all(0 <= score <= 10 for score in [storytelling, characters, vision]):
+                return (storytelling, characters, vision)
+        except ValueError:
+            pass
+
+    return None
+
+
+@router.post("/evaluate-criteria")
+async def evaluate_movie_criteria(
+    background_tasks: BackgroundTasks,
+    limit: Optional[int] = None
+):
+    """
+    Evaluate movies using LLM to generate 3D criteria scores
+
+    Args:
+        limit: Optional limit on number of movies to evaluate (for testing)
+
+    Returns:
+        dict: Summary of evaluation task
+    """
+    try:
+        conn = db_manager.get_duckdb_connection()
+
+        # Fetch movies
+        query = """
+            SELECT id, title, release_date, overview, runtime, custom_fields
+            FROM media
+            WHERE media_type = 'movie'
+            ORDER BY title
+        """
+
+        if limit:
+            query += f" LIMIT {limit}"
+
+        movies = conn.execute(query).fetchall()
+
+        logger.info(f"Starting evaluation of {len(movies)} movies")
+
+        # Process movies in background
+        def evaluate_movies_task():
+            successful = 0
+            failed = 0
+
+            for movie_data in movies:
+                movie_id, title, release_date, overview, runtime, custom_fields_raw = movie_data
+
+                try:
+                    # Parse custom fields
+                    custom_fields = json.loads(custom_fields_raw) if custom_fields_raw else {}
+                    tmdb_data = custom_fields.get('tmdb_data', {})
+
+                    # Build evaluation prompt
+                    year = str(release_date)[:4] if release_date else 'N/A'
+                    director = tmdb_data.get('director', 'Unknown')
+
+                    prompt = f"""Evaluate this movie:
+
+Title: {title} ({year})
+Director: {director}
+Runtime: {runtime} minutes
+
+Overview: {overview[:500] if overview else 'No overview available'}
+
+Rate this movie on the three criteria (storytelling, characters, cohesive_vision).
+Respond with only three numbers separated by commas."""
+
+                    # Call LLM
+                    response = call_ollama_for_evaluation(prompt)
+                    scores = parse_evaluation_scores(response)
+
+                    if scores:
+                        storytelling, characters, vision = scores
+
+                        # Update scores
+                        custom_fields['storytelling'] = round(storytelling, 1)
+                        custom_fields['characters'] = round(characters, 1)
+                        custom_fields['cohesive_vision'] = round(vision, 1)
+
+                        # Update in database
+                        conn = db_manager.get_duckdb_connection()
+                        conn.execute("""
+                            UPDATE media
+                            SET custom_fields = json_merge_patch(
+                                COALESCE(custom_fields, '{}')::JSON,
+                                ?::JSON
+                            )::VARCHAR,
+                            updated_at = ?
+                            WHERE id = ?
+                        """, [
+                            json.dumps(custom_fields),
+                            datetime.now().isoformat(),
+                            movie_id
+                        ])
+
+                        successful += 1
+                        logger.info(f"✅ {title}: S={storytelling}, C={characters}, V={vision}")
+                    else:
+                        failed += 1
+                        logger.warning(f"❌ Failed to parse scores for {title}: {response}")
+
+                except Exception as e:
+                    failed += 1
+                    logger.error(f"Error evaluating {title}: {e}")
+
+            logger.info(f"Evaluation complete: {successful} successful, {failed} failed")
+
+        # Start background task
+        background_tasks.add_task(evaluate_movies_task)
+
+        return {
+            "success": True,
+            "data": {
+                "message": "Evaluation started in background",
+                "total_movies": len(movies),
+                "note": "Check server logs for progress"
+            }
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to start evaluation: {e}")
         raise HTTPException(status_code=500, detail=str(e))
