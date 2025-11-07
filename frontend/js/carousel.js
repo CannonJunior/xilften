@@ -54,33 +54,45 @@ function renderCarousel(items) {
         .append('div')
         .attr('class', 'carousel-viewport');
 
-    // Create SVG for D3 rendering
+    // Calculate total width needed to show all items
+    const itemWidth = carouselState.itemWidth;
+    const gap = carouselState.gap;
+    const totalItemsWidth = items.length * itemWidth + (items.length - 1) * gap;
     const containerWidth = container.node().getBoundingClientRect().width;
     const containerHeight = 600;
 
+    // Use the larger of container width or total items width
+    const svgWidth = Math.max(containerWidth, totalItemsWidth + 100); // Add padding
+
     const svg = carouselWrapper
         .append('svg')
-        .attr('width', containerWidth)
+        .attr('width', '100%')
         .attr('height', containerHeight)
+        .attr('viewBox', `0 0 ${svgWidth} ${containerHeight}`)
         .attr('class', 'carousel-svg');
 
     carouselState.svg = svg;
     carouselState.container = container;
 
-    // Create group for items
+    // Create group for items - center all items together
+    const startX = Math.max(50, (containerWidth - totalItemsWidth) / 2);
     const itemsGroup = svg
         .append('g')
         .attr('class', 'carousel-items-group')
-        .attr('transform', `translate(${(containerWidth - carouselState.itemWidth) / 2}, 40)`);
+        .attr('transform', `translate(${startX}, 40)`);
 
     // Render items
     renderItems(itemsGroup, items);
 
-    // Add navigation buttons
-    addNavigationButtons(container);
+    // Add navigation buttons (optional - for scrolling between items)
+    if (items.length > 3) {
+        addNavigationButtons(container);
+    }
 
-    // Add thumbnail strip
-    addThumbnailStrip(container, items);
+    // Add thumbnail strip (optional - for many items)
+    if (items.length > 5) {
+        addThumbnailStrip(container, items);
+    }
 
     console.log(`✅ Carousel rendered with ${items.length} items`);
 }
@@ -102,6 +114,7 @@ function renderItems(group, items) {
         .enter()
         .append('g')
         .attr('class', 'carousel-item-group')
+        .attr('data-media-id', d => d.id)
         .attr('transform', (d, i) => {
             const x = i * (itemWidth + gap);
             return `translate(${x}, 0)`;
@@ -127,7 +140,8 @@ function renderItems(group, items) {
         const fo = d3.select(this);
         const div = fo.append('xhtml:div')
             .attr('class', `carousel-item ${i === 0 ? 'active' : ''}`)
-            .on('click', () => handleItemClick(d));
+            .attr('data-media-id', d.id)
+            .style('cursor', 'pointer');
 
         // Poster image
         const posterDiv = div.append('div')
@@ -195,7 +209,7 @@ function renderItems(group, items) {
         }
     });
 
-    // Make current item active
+    // Make all items visible (not just first one)
     updateActiveItem(0);
 }
 
@@ -419,16 +433,13 @@ function updateThumbnailActive(index) {
 }
 
 /**
- * Handle item click
+ * Handle item click - Now handled by expanded-card.js via data-media-id
  *
  * @param {Object} item - Media item
  */
 function handleItemClick(item) {
     console.log('🎬 Media clicked:', item.title);
-
-    // TODO: Show media detail modal or navigate to detail view
-    // For now, just log
-    alert(`Media: ${item.title}\n\nID: ${item.id}\nRating: ${item.tmdb_rating || 'N/A'}\n\nDetail view coming soon!`);
+    // Expanded card will handle the click via global event delegation
 }
 
 /**
