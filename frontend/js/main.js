@@ -8,6 +8,7 @@ import * as recommendations from './recommendations.js';
 import * as criteriaBuilder from './criteria-builder.js';
 import { init3DVisualization } from './3d-criteria-viz.js';
 import { initPersonaManager } from './persona-manager.js';
+import { initExpandedCard } from './expanded-card.js';
 
 /**
  * Application state
@@ -46,6 +47,9 @@ async function initApp() {
 
     // Initialize persona manager
     await initPersonaManager();
+
+    // Initialize expanded card
+    initExpandedCard();
 
     // Setup event listeners
     setupEventListeners();

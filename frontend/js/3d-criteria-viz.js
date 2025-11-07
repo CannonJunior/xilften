@@ -215,6 +215,7 @@ function renderMovies() {
     points.enter()
         .append('circle')
         .attr('class', 'movie-point')
+        .attr('data-media-id', d => d.id)
         .attr('cx', d => d.projected.x)
         .attr('cy', d => d.projected.y)
         .attr('r', d => 6 * d.projected.scale)
@@ -222,6 +223,7 @@ function renderMovies() {
         .attr('opacity', d => 0.5 + 0.5 * d.projected.scale)
         .attr('stroke', '#fff')
         .attr('stroke-width', 1)
+        .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             showMovieTooltip(event, d);
             d3.select(this)
