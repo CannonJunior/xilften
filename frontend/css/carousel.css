@@ -14,6 +14,29 @@
     padding: var(--spacing-xl);
 }
 
+/* ========== Carousel Wrapper - Horizontal Scroll ========== */
+.carousel-wrapper {
+    /* Scrollbar styling for webkit browsers */
+}
+
+.carousel-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.carousel-wrapper::-webkit-scrollbar-track {
+    background: #2a2a3e;
+    border-radius: 4px;
+}
+
+.carousel-wrapper::-webkit-scrollbar-thumb {
+    background: #6366f1;
+    border-radius: 4px;
+}
+
+.carousel-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #7c3aed;
+}
+
 /* ========== Carousel Viewport ========== */
 .carousel-viewport {
     position: relative;

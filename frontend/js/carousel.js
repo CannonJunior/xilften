@@ -48,15 +48,19 @@ function renderCarousel(items) {
     const container = d3.select('#media-carousel');
     container.html(''); // Clear previous content
 
-    // Create carousel structure with simple HTML
+    // Create carousel structure with horizontal scrolling
     const carouselWrapper = container
         .append('div')
         .attr('class', 'carousel-wrapper')
         .style('display', 'flex')
         .style('gap', '24px')
         .style('padding', '40px')
-        .style('justify-content', 'center')
-        .style('flex-wrap', 'wrap');
+        .style('overflow-x', 'auto')
+        .style('overflow-y', 'hidden')
+        .style('scroll-behavior', 'smooth')
+        .style('-webkit-overflow-scrolling', 'touch') // Smooth scrolling on mobile
+        .style('scrollbar-width', 'thin') // Firefox
+        .style('scrollbar-color', '#6366f1 #2a2a3e'); // Firefox
 
     carouselState.container = container;
 
@@ -68,7 +72,8 @@ function renderCarousel(items) {
         .append('div')
         .attr('class', 'carousel-item')
         .attr('data-media-id', d => d.id)
-        .style('width', '280px')
+        .style('min-width', '280px')
+        .style('flex-shrink', '0')
         .style('cursor', 'pointer')
         .style('opacity', 0);
 
@@ -175,12 +180,17 @@ function setupMousewheelScroll() {
     const container = document.getElementById('media-carousel');
     if (!container) return;
 
-    let scrollTimeout;
-
     container.addEventListener('wheel', (event) => {
-        // Allow natural scrolling if content overflows
-        // This is mainly for future when we have many items
-    }, { passive: true });
+        // Find the carousel wrapper inside the container
+        const wrapper = container.querySelector('.carousel-wrapper');
+        if (!wrapper) return;
+
+        // Convert vertical scroll to horizontal scroll
+        if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+            event.preventDefault();
+            wrapper.scrollLeft += event.deltaY;
+        }
+    }, { passive: false });
 }
 
 /**
