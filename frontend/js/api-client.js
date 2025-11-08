@@ -22,6 +22,11 @@ const defaultOptions = {
  * @throws {Error} - If response is not ok
  */
 async function handleResponse(response) {
+    // Handle 204 No Content responses (e.g., successful DELETE)
+    if (response.status === 204) {
+        return { success: true };
+    }
+
     const data = await response.json();
 
     if (!response.ok) {

@@ -38,10 +38,151 @@ export function initCalendar() {
     // Setup mousewheel scrolling
     setupMousewheelScrolling();
 
+    // Setup drag-and-drop for day card
+    setupDragAndDrop();
+
     // Load and render initial calendar
     loadCalendarData();
 
     console.log('✅ Calendar sidebar initialized');
+}
+
+/**
+ * Setup drag-and-drop functionality for adding movies to calendar
+ */
+function setupDragAndDrop() {
+    const dayCard = document.getElementById('day-detail-card');
+    const dayContainer = document.querySelector('.day-detail-container');
+
+    console.log('📅 Setting up drag-and-drop');
+    console.log('📅 Day card element:', dayCard);
+    console.log('📅 Day container element:', dayContainer);
+
+    if (!dayContainer) {
+        console.error('❌ Day container not found! Cannot setup drag-and-drop');
+        return;
+    }
+
+    console.log('✅ Day container found, adding event listeners');
+
+    // Prevent default drag behavior
+    dayContainer.addEventListener('dragenter', (event) => {
+        console.log('📅 DRAG ENTER - over day container');
+        event.preventDefault();
+    });
+
+    dayContainer.addEventListener('dragover', (event) => {
+        console.log('📅 DRAG OVER - over day container');
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+
+        if (!dayContainer.classList.contains('drag-over')) {
+            console.log('📅 Adding drag-over class');
+            dayContainer.classList.add('drag-over');
+        }
+    });
+
+    dayContainer.addEventListener('dragleave', (event) => {
+        console.log('📅 DRAG LEAVE - left day container', event.target);
+        if (event.target === dayContainer) {
+            console.log('📅 Removing drag-over class');
+            dayContainer.classList.remove('drag-over');
+        }
+    });
+
+    dayContainer.addEventListener('drop', async (event) => {
+        console.log('📅 DROP EVENT - Item dropped!');
+        event.preventDefault();
+        dayContainer.classList.remove('drag-over');
+
+        const mediaId = event.dataTransfer.getData('mediaId');
+        const mediaTitle = event.dataTransfer.getData('mediaTitle');
+
+        console.log('📅 Retrieved from dataTransfer - mediaId:', mediaId, 'mediaTitle:', mediaTitle);
+
+        if (!mediaId) {
+            console.error('❌ No media ID found in drag data');
+            console.log('📅 Available dataTransfer types:', event.dataTransfer.types);
+            return;
+        }
+
+        console.log(`📅 Dropped movie: ${mediaTitle} (${mediaId}) on ${calendarState.selectedDate.toDateString()}`);
+
+        // Create calendar event for this movie
+        await createMovieEvent(mediaId, mediaTitle, calendarState.selectedDate);
+    });
+
+    console.log('✅ Drag-and-drop event listeners added successfully');
+}
+
+/**
+ * Create a movie event on the calendar
+ *
+ * @param {string} mediaId - Media UUID
+ * @param {string} mediaTitle - Media title
+ * @param {Date} date - Event date
+ */
+async function createMovieEvent(mediaId, mediaTitle, date) {
+    console.log('📅 createMovieEvent called');
+    console.log('📅 Parameters - mediaId:', mediaId, 'mediaTitle:', mediaTitle, 'date:', date);
+
+    try {
+        const eventData = {
+            title: `Watch: ${mediaTitle}`,
+            event_type: 'watch',
+            event_date: date.toISOString().split('T')[0], // YYYY-MM-DD format
+            media_id: mediaId
+        };
+
+        console.log('📅 Creating calendar event with data:', eventData);
+
+        const response = await api.createCalendarEvent(eventData);
+
+        console.log('📅 API response:', response);
+
+        if (response && response.id) {
+            console.log('✅ Calendar event created successfully!');
+            console.log('✅ Event details:', response);
+
+            // Reload calendar data to show the new event
+            console.log('📅 Reloading calendar data...');
+            await loadCalendarData();
+
+            // Re-render the current day card to show the new event
+            console.log('📅 Re-rendering day card...');
+            renderDayCard();
+            console.log('✅ Calendar updated!');
+        } else {
+            console.error('❌ Failed to create calendar event:', response);
+        }
+    } catch (error) {
+        console.error('❌ Error creating calendar event:', error);
+        console.error('❌ Error stack:', error.stack);
+    }
+}
+
+/**
+ * Delete calendar event
+ *
+ * @param {string} eventId - Event UUID
+ */
+async function deleteEvent(eventId) {
+    console.log('🗑️ Deleting event:', eventId);
+
+    try {
+        const response = await api.deleteCalendarEvent(eventId);
+        console.log('🗑️ Delete response:', response);
+
+        // Reload calendar data to remove the deleted event
+        await loadCalendarData();
+
+        // Re-render the current day card
+        renderDayCard();
+
+        console.log('✅ Event deleted successfully!');
+    } catch (error) {
+        console.error('❌ Error deleting event:', error);
+    }
 }
 
 /**
@@ -168,7 +309,7 @@ async function loadCalendarData() {
         // Try to fetch events from API
         try {
             const response = await api.getCalendarEvents(params);
-            calendarState.events = response.data || [];
+            calendarState.events = response || [];
         } catch (error) {
             console.warn('⚠️ API not available, using sample events');
             calendarState.events = generateSampleEvents();
@@ -428,6 +569,17 @@ function renderDayCard() {
                 .append('div')
                 .attr('class', 'day-detail-event-type')
                 .text(event.event_type);
+
+            // Add delete button
+            const deleteButton = eventDiv
+                .append('div')
+                .attr('class', 'day-detail-event-delete')
+                .attr('title', 'Delete event')
+                .text('🗑️')
+                .on('click', async (e) => {
+                    e.stopPropagation();
+                    await deleteEvent(event.id);
+                });
         });
     } else {
         eventsSection

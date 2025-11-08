@@ -137,18 +137,24 @@ class CalendarService:
         Returns:
             dict: Created event
         """
+        import uuid
+
         conn = self.db.get_duckdb_connection()
+
+        # Generate UUID for the event
+        event_id = str(uuid.uuid4())
 
         result = conn.execute("""
             INSERT INTO calendar_events (
-                media_id, event_type, event_date, event_time,
+                id, media_id, event_type, event_date, event_time,
                 title, description, location,
                 icon, color,
                 reminder_enabled, reminder_minutes
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             RETURNING id
         """, [
+            event_id,
             str(event_data.media_id) if event_data.media_id else None,
             event_data.event_type.value,
             str(event_data.event_date),

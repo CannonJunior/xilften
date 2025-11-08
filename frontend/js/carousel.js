@@ -105,14 +105,40 @@ function renderCarousel(items) {
             .attr('class', 'media-poster-wrapper');
 
         if (d.poster_path) {
-            posterWrapper.append('img')
+            const img = posterWrapper.append('img')
                 .attr('class', 'media-poster')
                 .attr('src', getTMDBImageURL(d.poster_path, 'w500'))
                 .attr('alt', d.title)
-                .on('error', function() {
-                    d3.select(this.parentNode)
-                        .html(`<div class="media-poster loading" style="height: 420px; display: flex; align-items: center; justify-content: center; background: #2a2a3e;">${d.title}</div>`);
-                });
+                .attr('draggable', true)
+                .attr('data-media-id', d.id)
+                .attr('data-media-title', d.title);
+
+            // Add dragstart event listener
+            img.on('dragstart', function(event) {
+                console.log('🎬 DRAG START - Movie:', d.title, 'ID:', d.id);
+                console.log('🎬 Event:', event);
+                console.log('🎬 DataTransfer available:', !!event.dataTransfer);
+
+                // Store the media ID and title in the drag data
+                event.dataTransfer.setData('mediaId', d.id);
+                event.dataTransfer.setData('mediaTitle', d.title);
+                event.dataTransfer.effectAllowed = 'copy';
+
+                console.log('🎬 Data set in dataTransfer - mediaId:', d.id, 'mediaTitle:', d.title);
+            });
+
+            img.on('drag', function(event) {
+                console.log('🎬 DRAGGING...');
+            });
+
+            img.on('dragend', function(event) {
+                console.log('🎬 DRAG END');
+            });
+
+            img.on('error', function() {
+                d3.select(this.parentNode)
+                    .html(`<div class="media-poster loading" style="height: 420px; display: flex; align-items: center; justify-content: center; background: #2a2a3e;">${d.title}</div>`);
+            });
         } else {
             posterWrapper.html(`<div class="media-poster loading" style="height: 420px; display: flex; align-items: center; justify-content: center; background: #2a2a3e;">${d.title}</div>`);
         }
@@ -219,10 +245,10 @@ function setupMousewheelScroll() {
         const wrapper = container.querySelector('.carousel-wrapper');
         if (!wrapper) return;
 
-        // Convert vertical scroll to horizontal scroll
+        // Convert vertical scroll to horizontal scroll with 3x speed
         if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
             event.preventDefault();
-            wrapper.scrollLeft += event.deltaY;
+            wrapper.scrollLeft += event.deltaY * 3;
         }
     }, { passive: false });
 

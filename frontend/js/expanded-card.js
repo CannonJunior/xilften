@@ -102,11 +102,60 @@ function renderExpandedCard() {
         }).format(amount);
     };
 
+    // Format runtime
+    const formatRuntime = (minutes) => {
+        if (!minutes) return '';
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+    };
+
+    // Get TMDB image URL
+    const getTMDBImageURL = (path, size = 'w500') => {
+        if (!path) return '';
+        return `https://image.tmdb.org/t/p/${size}${path}`;
+    };
+
     content.innerHTML = `
         <div class="infobox">
             <div class="infobox-header">
                 <h2>${media.title}</h2>
                 ${media.original_title !== media.title ? `<p class="original-title">${media.original_title}</p>` : ''}
+            </div>
+
+            <!-- Media Info Section -->
+            <div class="sidebar-meta-info">
+                ${media.release_date ? `
+                <div class="sidebar-meta-item">
+                    <span class="sidebar-meta-label">Year:</span>
+                    <span class="sidebar-meta-value">${new Date(media.release_date).getFullYear()}</span>
+                </div>
+                ` : ''}
+
+                ${media.runtime ? `
+                <div class="sidebar-meta-item">
+                    <span class="sidebar-meta-label">Runtime:</span>
+                    <span class="sidebar-meta-value">${formatRuntime(media.runtime)}</span>
+                </div>
+                ` : ''}
+
+                ${media.tmdb_rating ? `
+                <div class="sidebar-meta-item">
+                    <span class="sidebar-meta-label">Rating:</span>
+                    <span class="sidebar-meta-value">⭐ ${parseFloat(media.tmdb_rating).toFixed(1)}/10</span>
+                </div>
+                ` : ''}
+
+                ${media.genres && media.genres.length > 0 ? `
+                <div class="sidebar-meta-item">
+                    <span class="sidebar-meta-label">Genres:</span>
+                    <div class="sidebar-genre-tags">
+                        ${media.genres.map(genre =>
+                            `<span class="sidebar-genre-tag">${typeof genre === 'string' ? genre : genre.name}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+                ` : ''}
             </div>
 
             <table class="infobox-table">

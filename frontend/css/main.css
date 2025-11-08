@@ -190,36 +190,41 @@ body {
 /* ========== Main Content ========== */
 .app-main {
     flex: 1;
-    max-width: 1400px;
+    max-width: 100%;
     width: 100%;
     margin: 0 auto;
-    padding: var(--spacing-2xl) var(--spacing-xl);
+    padding: var(--spacing-2xl) 0;
     display: flex;
-    gap: var(--spacing-xl);
+    gap: 0;
 }
 
 .main-content-wrapper {
     flex: 1;
     min-width: 0;
+    padding: 0 var(--spacing-xl);
 }
 
 /* ========== Calendar Sidebar ========== */
 .calendar-sidebar {
-    width: 420px;
+    flex: 0 0 33.333%;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xl);
+    padding: 0 var(--spacing-xl);
 }
 
 /* ========== Movie Info Sidebar ========== */
 .movie-info-sidebar {
-    width: 420px;
+    flex: 0 0 33.333%;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xl);
     background-color: var(--color-bg-primary);
     overflow-y: auto;
     position: relative;
+    padding: 0 var(--spacing-xl);
 }
 
 .movie-info-sidebar .sidebar-close {
@@ -247,7 +252,22 @@ body {
 }
 
 .movie-info-content {
-    padding: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+}
+
+/* Drag and Drop States */
+.day-detail-container.drag-over {
+    background-color: rgba(99, 102, 241, 0.1);
+    border: 2px dashed var(--color-primary);
+    border-radius: var(--radius-lg);
+}
+
+.media-poster {
+    cursor: grab;
+}
+
+.media-poster:active {
+    cursor: grabbing;
 }
 
 /* Month Calendar Grid */
@@ -477,6 +497,22 @@ body {
 
 .day-detail-event-content {
     flex: 1;
+}
+
+.day-detail-event-delete {
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+    opacity: 0.5;
+    transition: all var(--transition-fast);
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+.day-detail-event-delete:hover {
+    opacity: 1;
+    background-color: rgba(239, 68, 68, 0.1);
+    transform: scale(1.1);
 }
 
 .day-detail-event-title {
@@ -1016,6 +1052,46 @@ body {
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
     font-style: italic;
+}
+
+/* Sidebar Media Info Section */
+.sidebar-meta-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) 0;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--spacing-lg);
+    align-items: center;
+}
+
+.sidebar-meta-item {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+}
+
+.sidebar-meta-label {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+}
+
+.sidebar-meta-value {
+    color: var(--color-text-primary);
+}
+
+.sidebar-genre-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.sidebar-genre-tag {
+    padding: 4px 12px;
+    background-color: var(--color-bg-tertiary);
+    border-radius: 12px;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-primary);
 }
 
 .infobox-image {
