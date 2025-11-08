@@ -42,11 +42,15 @@ class MediaService:
             Dict: Paginated result with items, total, page info
         """
         offset = (page - 1) * page_size
-        
+
         # Extract filter parameters
         media_type = filters.media_type if filters else None
-        genre_ids = None  # TODO: Convert genre slug to IDs
-        
+        genre_ids = None
+
+        # Convert genre slug to genre IDs if provided
+        if filters and filters.genre:
+            genre_ids = self._get_genre_ids_by_slug(filters.genre)
+
         # Get media from database
         result = self.db_service.list_media(
             limit=page_size,
@@ -298,6 +302,29 @@ class MediaService:
                 continue
         
         return matches
+
+    def _get_genre_ids_by_slug(self, genre_slug: str) -> Optional[List[str]]:
+        """
+        Get genre IDs by slug.
+
+        Args:
+            genre_slug (str): Genre slug to search for
+
+        Returns:
+            Optional[List[str]]: List of genre IDs matching the slug, or None
+        """
+        conn = self.db_service.get_connection()
+
+        # Query to get genre ID by slug
+        result = conn.execute(
+            "SELECT id FROM genres WHERE slug = ?",
+            [genre_slug]
+        ).fetchone()
+
+        if result:
+            return [str(result[0])]
+
+        return None
 
     def _apply_sorting(
         self,

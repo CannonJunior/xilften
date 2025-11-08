@@ -4,9 +4,10 @@
 # Port: 7575 (ENFORCED - See CLAUDE.md)
 #
 # This script:
-# 1. Checks if port 7575 is in use
-# 2. Kills any process using that port
-# 3. Starts the XILFTEN application
+# 1. Kills any existing XILFTEN server processes
+# 2. Checks if port 7575 is in use
+# 3. Kills any process using that port
+# 4. Starts the XILFTEN application
 #
 
 set -e  # Exit on error
@@ -29,6 +30,27 @@ echo -e "${BLUE}  XILFTEN Application Startup${NC}"
 echo -e "${BLUE}  Port: ${PORT}${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
+
+# Function to kill existing XILFTEN server processes
+kill_existing_servers() {
+    echo -e "${BLUE}🔍 Checking for existing XILFTEN server processes...${NC}"
+
+    # Find processes running backend/server.py
+    local server_pids=$(pgrep -f "backend/server.py" 2>/dev/null || true)
+
+    if [ -n "$server_pids" ]; then
+        echo -e "${YELLOW}⚠️  Found existing XILFTEN server processes: ${server_pids}${NC}"
+        for pid in $server_pids; do
+            echo -e "${YELLOW}🔫 Killing process ${pid}...${NC}"
+            if kill -9 ${pid} 2>/dev/null; then
+                echo -e "${GREEN}✅ Process ${pid} killed${NC}"
+            fi
+        done
+        sleep 2
+    else
+        echo -e "${GREEN}✅ No existing XILFTEN server processes found${NC}"
+    fi
+}
 
 # Function to check if port is in use
 check_port() {
@@ -58,6 +80,11 @@ kill_port_process() {
         fi
     fi
 }
+
+# First, kill any existing XILFTEN server processes
+kill_existing_servers
+
+echo ""
 
 # Check if port is in use
 echo -e "${BLUE}🔍 Checking if port ${PORT} is in use...${NC}"

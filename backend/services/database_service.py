@@ -145,6 +145,9 @@ class DatabaseService:
                     except Exception:
                         pass
 
+            # Add genres for this media item
+            media['genres'] = self._get_media_genres(conn, media['id'])
+
             return media
 
         return None
@@ -214,12 +217,46 @@ class DatabaseService:
                     except Exception:
                         pass
 
+            # Add genres for this media item
+            media['genres'] = self._get_media_genres(conn, media['id'])
+
             items.append(media)
 
         return {
             'items': items,
             'total': total
         }
+
+    def _get_media_genres(self, conn, media_id: str) -> List[Dict[str, Any]]:
+        """
+        Get genres for a media item.
+
+        Args:
+            conn: Database connection
+            media_id (str): Media ID
+
+        Returns:
+            List[Dict]: List of genre dictionaries with name and slug
+        """
+        query = """
+            SELECT g.id, g.name, g.slug
+            FROM genres g
+            INNER JOIN media_genres mg ON g.id = mg.genre_id
+            WHERE mg.media_id = ?
+            ORDER BY g.name
+        """
+
+        result = conn.execute(query, [media_id]).fetchall()
+
+        genres = []
+        for row in result:
+            genres.append({
+                'id': row[0],
+                'name': row[1],
+                'slug': row[2]
+            })
+
+        return genres
 
     def update_media(self, media_id: str, updates: Dict[str, Any]) -> bool:
         """
