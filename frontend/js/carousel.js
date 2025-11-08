@@ -13,6 +13,8 @@ let carouselState = {
     gap: 24,
     isScrolling: false,
     container: null,
+    scrollTimeout: null,
+    currentlyViewedItem: null,
 };
 
 /**
@@ -223,6 +225,75 @@ function setupMousewheelScroll() {
             wrapper.scrollLeft += event.deltaY;
         }
     }, { passive: false });
+
+    // Setup scroll tracking for sidebar updates
+    setupScrollTracking();
+}
+
+/**
+ * Setup scroll tracking to detect which item is in view
+ */
+function setupScrollTracking() {
+    const container = document.getElementById('media-carousel');
+    if (!container) return;
+
+    // Debounced scroll handler
+    container.addEventListener('scroll', () => {
+        const wrapper = container.querySelector('.carousel-wrapper');
+        if (!wrapper) return;
+
+        // Clear existing timeout
+        if (carouselState.scrollTimeout) {
+            clearTimeout(carouselState.scrollTimeout);
+        }
+
+        // Debounce to avoid too many updates
+        carouselState.scrollTimeout = setTimeout(() => {
+            detectCenterItem();
+        }, 150);
+    }, true);
+}
+
+/**
+ * Detect which carousel item is currently centered in view
+ */
+function detectCenterItem() {
+    const wrapper = document.querySelector('.carousel-wrapper');
+    if (!wrapper) return;
+
+    const items = wrapper.querySelectorAll('.carousel-item');
+    if (items.length === 0) return;
+
+    const wrapperRect = wrapper.getBoundingClientRect();
+    const centerX = wrapperRect.left + wrapperRect.width / 2;
+
+    let closestItem = null;
+    let closestDistance = Infinity;
+
+    items.forEach(item => {
+        const itemRect = item.getBoundingClientRect();
+        const itemCenterX = itemRect.left + itemRect.width / 2;
+        const distance = Math.abs(centerX - itemCenterX);
+
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            closestItem = item;
+        }
+    });
+
+    if (closestItem) {
+        const mediaId = closestItem.dataset.mediaId;
+
+        // Only update if this is a different item
+        if (carouselState.currentlyViewedItem !== mediaId) {
+            carouselState.currentlyViewedItem = mediaId;
+
+            // Dispatch event for sidebar to listen to
+            window.dispatchEvent(new CustomEvent('carouselItemInView', {
+                detail: { mediaId }
+            }));
+        }
+    }
 }
 
 /**
@@ -263,4 +334,4 @@ function getTMDBImageURL(path, size = 'w500') {
 initCarousel();
 
 // Export functions for external use
-export { renderCarousel };
+export { renderCarousel, detectCenterItem };

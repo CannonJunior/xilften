@@ -37,6 +37,9 @@ export function initExpandedCard() {
         }
     });
 
+    // Listen for carousel scroll events
+    setupCarouselScrollListener();
+
     console.log('✅ Expanded Card initialized');
 }
 
@@ -255,5 +258,45 @@ function closeExpandedCard() {
         cardState.container.style.display = 'none';
         cardState.isOpen = false;
         cardState.currentMedia = null;
+    }
+}
+
+/**
+ * Setup listener for carousel scroll events
+ */
+function setupCarouselScrollListener() {
+    window.addEventListener('carouselItemInView', async (event) => {
+        // Only update if sidebar is currently open
+        if (!cardState.isOpen) {
+            return;
+        }
+
+        const { mediaId } = event.detail;
+
+        // Only update if this is a different media item
+        if (cardState.currentMedia?.id !== mediaId) {
+            console.log(`🔄 Carousel scrolled to new item: ${mediaId}`);
+            await updateExpandedCard(mediaId);
+        }
+    });
+}
+
+/**
+ * Update expanded card with new media (without fetching again if already open)
+ *
+ * @param {string} mediaId - Media UUID
+ */
+async function updateExpandedCard(mediaId) {
+    try {
+        // Fetch media details
+        const response = await api.getMediaById(mediaId);
+
+        if (response.success) {
+            cardState.currentMedia = response.data;
+            renderExpandedCard();
+            // Don't need to open again - it's already open
+        }
+    } catch (error) {
+        console.error('❌ Failed to update media details:', error);
     }
 }
