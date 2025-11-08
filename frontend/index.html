@@ -95,9 +95,24 @@
                         <button id="create-criteria" class="primary-button">Create Custom Criteria</button>
                     </div>
                 </div>
-                <div id="recommendations-container" class="recommendations-container">
-                    <!-- Recommendations will be rendered here -->
-                    <p class="empty-message">Select a criteria preset or create your own to get recommendations.</p>
+
+                <!-- Main Content with Sidebar -->
+                <div class="recommendations-main">
+                    <!-- Recommendations Carousel -->
+                    <div id="recommendations-carousel" class="carousel-container">
+                        <div class="carousel-count-badge">
+                            <span id="recommendations-count">0</span> recommendations
+                        </div>
+                        <!-- D3.js carousel will be rendered here -->
+                        <p class="empty-message">Select a criteria preset or create your own to get recommendations.</p>
+                    </div>
+
+                    <!-- Recommendation Info Sidebar -->
+                    <aside id="recommendation-sidebar" class="recommendation-sidebar">
+                        <div id="recommendation-detail-card" class="recommendation-detail-card">
+                            <p class="empty-message">Select a criteria preset to get started</p>
+                        </div>
+                    </aside>
                 </div>
             </section>
 
@@ -185,15 +200,15 @@
     </div>
 
     <!-- JavaScript Modules -->
-    <script type="module" src="/static/js/main.js"></script>
-    <script type="module" src="/static/js/api-client.js"></script>
-    <script type="module" src="/static/js/carousel.js"></script>
-    <script type="module" src="/static/js/calendar.js"></script>
-    <script type="module" src="/static/js/recommendations.js"></script>
-    <script type="module" src="/static/js/criteria-builder.js"></script>
-    <script type="module" src="/static/js/ai-interface.js"></script>
-    <script type="module" src="/static/js/3d-criteria-viz.js"></script>
-    <script type="module" src="/static/js/persona-manager.js"></script>
-    <script type="module" src="/static/js/expanded-card.js"></script>
+    <script type="module" src="/static/js/main.js?v=20251108005"></script>
+    <script type="module" src="/static/js/api-client.js?v=20251108005"></script>
+    <script type="module" src="/static/js/carousel.js?v=20251108005"></script>
+    <script type="module" src="/static/js/calendar.js?v=20251108005"></script>
+    <script type="module" src="/static/js/recommendations.js?v=20251108005"></script>
+    <script type="module" src="/static/js/criteria-builder.js?v=20251108005"></script>
+    <script type="module" src="/static/js/ai-interface.js?v=20251108005"></script>
+    <script type="module" src="/static/js/3d-criteria-viz.js?v=20251108005"></script>
+    <script type="module" src="/static/js/persona-manager.js?v=20251108005"></script>
+    <script type="module" src="/static/js/expanded-card.js?v=20251108005"></script>
 </body>
 </html>
