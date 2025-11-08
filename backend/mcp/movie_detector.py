@@ -232,11 +232,67 @@ class MovieNameDetector:
 
         logger.info(f"🎬 Detected {len(detected_movies)} movie mentions in response")
 
+        # Get unique movies for poster gallery
+        poster_html = self._generate_poster_gallery_html(detected_movies)
+
         return {
             'enriched_text': enriched_text,
             'detected_movies': detected_movies,
-            'detection_count': len(detected_movies)
+            'detection_count': len(detected_movies),
+            'poster_gallery_html': poster_html
         }
+
+    def _generate_poster_gallery_html(self, detected_movies: List[Dict]) -> str:
+        """
+        Generate HTML for poster gallery from detected movies.
+
+        Args:
+            detected_movies (List[Dict]): List of detected movie metadata
+
+        Returns:
+            str: HTML string for poster gallery
+        """
+        # Get unique movies (deduplicate by movie_id)
+        unique_movies = {}
+        for movie in detected_movies:
+            if movie['movie_id'] not in unique_movies:
+                unique_movies[movie['movie_id']] = movie
+
+        if not unique_movies:
+            return ''
+
+        # Build HTML
+        html_parts = ['<div class="ai-poster-gallery">']
+
+        for movie in unique_movies.values():
+            poster_path = movie.get('poster_path')
+            if not poster_path:
+                continue  # Skip movies without posters
+
+            # TMDB image base URL
+            poster_url = f"https://image.tmdb.org/t/p/w200{poster_path}"
+            movie_id = movie['movie_id']
+            title = movie['title']
+
+            # Create draggable poster HTML
+            poster_html = f'''
+                <div class="ai-poster-item">
+                    <img
+                        src="{poster_url}"
+                        alt="{title}"
+                        class="ai-poster-image media-poster"
+                        draggable="true"
+                        data-media-id="{movie_id}"
+                        data-media-title="{title}"
+                    />
+                    <div class="ai-poster-title">{title}</div>
+                </div>
+            '''
+            html_parts.append(poster_html)
+
+        html_parts.append('</div>')
+
+        return ''.join(html_parts)
 
 
 # Global singleton instance

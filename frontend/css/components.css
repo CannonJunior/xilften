@@ -1004,3 +1004,64 @@
 .secondary-button:hover {
     background: rgba(255, 255, 255, 0.15);
 }
+
+/* =============================================================================
+   AI POSTER GALLERY
+   ============================================================================= */
+
+.ai-poster-gallery {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    flex-wrap: nowrap;
+}
+
+.ai-poster-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 140px;
+}
+
+.ai-poster-image {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    cursor: grab;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ai-poster-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.ai-poster-image:active {
+    cursor: grabbing;
+}
+
+.ai-poster-title {
+    margin-top: 8px;
+    font-size: 12px;
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.3;
+    max-height: 2.6em;
+}
+
+.poster-gallery-container {
+    margin-top: 12px;
+}
+

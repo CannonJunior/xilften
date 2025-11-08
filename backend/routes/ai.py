@@ -26,6 +26,7 @@ from backend.services.cag_service import (
     ChatRequest,
     CAGResponse
 )
+from backend.mcp.movie_detector import get_movie_detector
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +78,7 @@ async def generate_mashup(request: MashupRequest):
     - `simple`: Concise mashup with key points
     - `detailed`: Comprehensive breakdown with full analysis
 
-    **Returns**: Creative mashup concept combining the reference media
+    **Returns**: Creative mashup concept with movie names enriched with icons
     """
     try:
         logger.info(f"📬 Received mashup request: {request.user_query}")
@@ -87,11 +88,20 @@ async def generate_mashup(request: MashupRequest):
         if not result.success:
             raise HTTPException(status_code=500, detail=result.error)
 
+        # Enrich response with movie detection
+        detector = get_movie_detector()
+        enriched_result = detector.enrich_response_with_metadata(result.content)
+
         return APIResponse(
             success=True,
             data={
-                "content": result.content,
-                "metadata": result.metadata
+                "content": enriched_result['enriched_text'],
+                "metadata": {
+                    **result.metadata,
+                    "detected_movies": enriched_result['detected_movies'],
+                    "detection_count": enriched_result['detection_count'],
+                    "poster_gallery_html": enriched_result['poster_gallery_html']
+                }
             }
         )
 
@@ -168,7 +178,7 @@ async def generate_high_concept(request: HighConceptRequest):
     - `full`: Complete pitch with acts, characters, and structure
     - `logline`: Multiple concise logline options
 
-    **Returns**: Original story concept (NOT a mashup)
+    **Returns**: Original story concept with movie names enriched with icons
     """
     try:
         logger.info(f"📬 Received high-concept request with {len(request.references)} references")
@@ -178,11 +188,20 @@ async def generate_high_concept(request: HighConceptRequest):
         if not result.success:
             raise HTTPException(status_code=500, detail=result.error)
 
+        # Enrich response with movie detection
+        detector = get_movie_detector()
+        enriched_result = detector.enrich_response_with_metadata(result.content)
+
         return APIResponse(
             success=True,
             data={
-                "content": result.content,
-                "metadata": result.metadata
+                "content": enriched_result['enriched_text'],
+                "metadata": {
+                    **result.metadata,
+                    "detected_movies": enriched_result['detected_movies'],
+                    "detection_count": enriched_result['detection_count'],
+                    "poster_gallery_html": enriched_result['poster_gallery_html']
+                }
             }
         )
 
@@ -222,7 +241,7 @@ async def get_recommendations(request: RecommendationRequest):
     **Mood-Based Recommendations**:
     Set `mood_based: true` to get recommendations based on current emotional state.
 
-    **Returns**: 5-7 personalized recommendations with explanations
+    **Returns**: Personalized recommendations with movie names enriched with icons
     """
     try:
         logger.info(f"📬 Received recommendation request: {request.user_query}")
@@ -232,11 +251,20 @@ async def get_recommendations(request: RecommendationRequest):
         if not result.success:
             raise HTTPException(status_code=500, detail=result.error)
 
+        # Enrich response with movie detection
+        detector = get_movie_detector()
+        enriched_result = detector.enrich_response_with_metadata(result.content)
+
         return APIResponse(
             success=True,
             data={
-                "content": result.content,
-                "metadata": result.metadata
+                "content": enriched_result['enriched_text'],
+                "metadata": {
+                    **result.metadata,
+                    "detected_movies": enriched_result['detected_movies'],
+                    "detection_count": enriched_result['detection_count'],
+                    "poster_gallery_html": enriched_result['poster_gallery_html']
+                }
             }
         )
 
@@ -267,7 +295,7 @@ async def find_similar_titles(request: SimilarTitlesRequest):
     - `themes`: Thematic content
     - `pacing`: Story pacing and structure
 
-    **Returns**: Similar titles organized by similarity level
+    **Returns**: Similar titles with movie names enriched with icons
     """
     try:
         logger.info(f"📬 Received similar titles request for: {request.reference_title}")
@@ -277,11 +305,20 @@ async def find_similar_titles(request: SimilarTitlesRequest):
         if not result.success:
             raise HTTPException(status_code=500, detail=result.error)
 
+        # Enrich response with movie detection
+        detector = get_movie_detector()
+        enriched_result = detector.enrich_response_with_metadata(result.content)
+
         return APIResponse(
             success=True,
             data={
-                "content": result.content,
-                "metadata": result.metadata
+                "content": enriched_result['enriched_text'],
+                "metadata": {
+                    **result.metadata,
+                    "detected_movies": enriched_result['detected_movies'],
+                    "detection_count": enriched_result['detection_count'],
+                    "poster_gallery_html": enriched_result['poster_gallery_html']
+                }
             }
         )
 
@@ -320,7 +357,7 @@ async def chat(request: ChatRequest):
     **Conversation History** (optional):
     Include previous messages to maintain context across multiple exchanges.
 
-    **Returns**: Conversational response about media
+    **Returns**: Conversational response about media with movie names enriched with icons
     """
     try:
         logger.info(f"📬 Received chat message: {request.user_message[:50]}...")
@@ -330,11 +367,20 @@ async def chat(request: ChatRequest):
         if not result.success:
             raise HTTPException(status_code=500, detail=result.error)
 
+        # Enrich response with movie detection
+        detector = get_movie_detector()
+        enriched_result = detector.enrich_response_with_metadata(result.content)
+
         return APIResponse(
             success=True,
             data={
-                "content": result.content,
-                "metadata": result.metadata
+                "content": enriched_result['enriched_text'],
+                "metadata": {
+                    **result.metadata,
+                    "detected_movies": enriched_result['detected_movies'],
+                    "detection_count": enriched_result['detection_count'],
+                    "poster_gallery_html": enriched_result['poster_gallery_html']
+                }
             }
         )
 

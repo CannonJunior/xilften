@@ -388,8 +388,9 @@ async function sendAIMessage() {
             typingElement.remove();
         }
 
-        // Add AI response
-        appendChatMessage('assistant', response.data.content);
+        // Add AI response with poster gallery if available
+        const posterGalleryHtml = response.data.metadata?.poster_gallery_html || '';
+        appendChatMessage('assistant', response.data.content, posterGalleryHtml);
 
     } catch (error) {
         console.error('❌ AI request failed:', error);
@@ -402,9 +403,10 @@ async function sendAIMessage() {
  *
  * @param {string} role - 'user' or 'assistant'
  * @param {string} content - Message content
+ * @param {string} posterGalleryHtml - Optional HTML for poster gallery
  * @returns {string} - Message element ID
  */
-function appendChatMessage(role, content) {
+function appendChatMessage(role, content, posterGalleryHtml = '') {
     const chatMessages = document.getElementById('chat-messages');
     if (!chatMessages) return;
 
@@ -429,6 +431,25 @@ function appendChatMessage(role, content) {
     timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     messageDiv.appendChild(contentDiv);
+
+    // Add poster gallery if provided
+    if (posterGalleryHtml) {
+        const galleryDiv = document.createElement('div');
+        galleryDiv.className = 'poster-gallery-container';
+        galleryDiv.innerHTML = posterGalleryHtml;
+        messageDiv.appendChild(galleryDiv);
+
+        // Add drag event listeners to all poster images
+        setTimeout(() => {
+            const posters = galleryDiv.querySelectorAll('.ai-poster-image[draggable="true"]');
+            posters.forEach(poster => {
+                poster.addEventListener('dragstart', handlePosterDragStart);
+                poster.addEventListener('drag', handlePosterDrag);
+                poster.addEventListener('dragend', handlePosterDragEnd);
+            });
+        }, 100);
+    }
+
     messageDiv.appendChild(timeDiv);
     chatMessages.appendChild(messageDiv);
 
@@ -436,6 +457,34 @@ function appendChatMessage(role, content) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     return messageId;
+}
+
+/**
+ * Handle drag start for AI poster images
+ */
+function handlePosterDragStart(event) {
+    const mediaId = event.target.dataset.mediaId;
+    const mediaTitle = event.target.dataset.mediaTitle;
+
+    console.log('🎬 AI POSTER DRAG START - Movie:', mediaTitle, 'ID:', mediaId);
+
+    event.dataTransfer.setData('mediaId', mediaId);
+    event.dataTransfer.setData('mediaTitle', mediaTitle);
+    event.dataTransfer.effectAllowed = 'copy';
+}
+
+/**
+ * Handle drag for AI poster images
+ */
+function handlePosterDrag(event) {
+    console.log('🎬 AI POSTER DRAGGING...');
+}
+
+/**
+ * Handle drag end for AI poster images
+ */
+function handlePosterDragEnd(event) {
+    console.log('🎬 AI POSTER DRAG END');
 }
 
 /**
