@@ -26,28 +26,484 @@
       "year": 1976,
       "excerpt": "Scorsese's New York is the big city of the thrillers he feasted his imagination on — but at a later stage of decay. This New York is a voluptuous enemy. The street vapors become ghostly; sport shirts worn at night have a smeary phosphorescence. And this Hell is always in motion.",
       "rating": "positive",
-      "key_themes": ["visual decay", "urban nightmare", "directorial vision"]
+      "key_themes": [
+        "visual decay",
+        "urban nightmare",
+        "directorial vision"
+      ]
     },
     {
       "film": "Manhattan",
       "year": 1979,
       "excerpt": "The willed sterility of his style is terrifying to think about. Allen is playing the wise fool, and though he's comic, he's never ridiculous — he's much too careful for that.",
       "rating": "mixed",
-      "key_themes": ["sterility", "control", "self-awareness"]
+      "key_themes": [
+        "sterility",
+        "control",
+        "self-awareness"
+      ]
     },
     {
       "film": "Bonnie and Clyde",
       "year": 1967,
       "excerpt": "The audience is alive to it. Our experience as we watch it has some connection with the way we reacted to movies in childhood: with how we came to love them and to feel they were ours — not an art that we learned over the years to appreciate but simply and immediately ours.",
       "rating": "positive",
-      "key_themes": ["audience connection", "visceral cinema", "childhood wonder"]
+      "key_themes": [
+        "audience connection",
+        "visceral cinema",
+        "childhood wonder"
+      ]
     },
     {
       "film": "The Man Who Would Be King",
       "year": 1975,
       "excerpt": "The ironies go by too fast — we want them to vibrate a little. The movie is entertaining, but it's too easily entertaining; we're left wanting it to be more than a schoolboys' high-spirited lark.",
       "rating": "mixed",
-      "key_themes": ["pacing issues", "unfulfilled potential", "surface entertainment"]
+      "key_themes": [
+        "pacing issues",
+        "unfulfilled potential",
+        "surface entertainment"
+      ]
+    },
+    {
+      "film": "The Godfather Part II",
+      "year": 1974,
+      "excerpt": "Coppola has taken the gangster movie and made it operatic, turned it into a vast dark canvas where power corrupts with the inevitability of Greek tragedy. This is voluptuous filmmaking — every frame pulsates with ambition.",
+      "rating": "positive",
+      "key_themes": [
+        "operatic scope",
+        "visual ambition",
+        "tragic inevitability"
+      ]
+    },
+    {
+      "film": "Chinatown",
+      "year": 1974,
+      "excerpt": "Polanski's Los Angeles is rotting from the inside — a sun-bleached nightmare where even the water is corrupt. The film has this terrifying sophistication, like watching a poisonous flower bloom in slow motion.",
+      "rating": "positive",
+      "key_themes": [
+        "urban decay",
+        "systemic corruption",
+        "visual poetry"
+      ]
+    },
+    {
+      "film": "Annie Hall",
+      "year": 1977,
+      "excerpt": "Allen is so busy being clever, so determined to show us his neurotic charm, that the movie never quite breathes. It's amusing, yes, but there's something calculating underneath all that stammering vulnerability.",
+      "rating": "mixed",
+      "key_themes": [
+        "calculated charm",
+        "self-consciousness",
+        "emotional distance"
+      ]
+    },
+    {
+      "film": "Nashville",
+      "year": 1975,
+      "excerpt": "Altman's America is sprawling, messy, gorgeous, and absolutely alive. The movie has no theory, no rules — it just moves like life itself, twenty-four characters colliding in the hot Tennessee sun.",
+      "rating": "positive",
+      "key_themes": [
+        "sprawling narrative",
+        "American tapestry",
+        "spontaneous energy"
+      ]
+    },
+    {
+      "film": "Jaws",
+      "year": 1975,
+      "excerpt": "Spielberg gives us a shark movie that knows exactly what it's doing. The film pulsates with primal fear — that unseen thing below the surface. It's pure cinema, and it grabbed me by the throat.",
+      "rating": "positive",
+      "key_themes": [
+        "primal fear",
+        "technical mastery",
+        "visceral impact"
+      ]
+    },
+    {
+      "film": "Star Wars",
+      "year": 1977,
+      "excerpt": "Lucas has made a junk food masterpiece — all sugar rush and no substance. The visuals dazzle, but underneath there's nothing but Saturday matinee clichés dressed up in chrome.",
+      "rating": "negative",
+      "key_themes": [
+        "visual spectacle",
+        "narrative emptiness",
+        "empty calories"
+      ]
+    },
+    {
+      "film": "The Shining",
+      "year": 1980,
+      "excerpt": "Kubrick's hotel is a gorgeous prison, every frame composed like a museum piece. But the coldness is terrifying to think about — he's so in control that the madness feels mechanical.",
+      "rating": "mixed",
+      "key_themes": [
+        "visual control",
+        "emotional coldness",
+        "calculated madness"
+      ]
+    },
+    {
+      "film": "Raging Bull",
+      "year": 1980,
+      "excerpt": "Scorsese and De Niro have made something raw and beautiful and utterly punishing. The violence isn't action — it's self-destruction in black and white poetry. I felt every punch in my gut.",
+      "rating": "positive",
+      "key_themes": [
+        "visceral violence",
+        "self-destruction",
+        "poetic brutality"
+      ]
+    },
+    {
+      "film": "E.T. the Extra-Terrestrial",
+      "year": 1982,
+      "excerpt": "Spielberg's manipulation is so expert, so shameless, that you can see the strings and still feel your heart being pulled. It's engineered emotion, but engineered so beautifully that I didn't care.",
+      "rating": "positive",
+      "key_themes": [
+        "emotional manipulation",
+        "technical mastery",
+        "calculated sentiment"
+      ]
+    },
+    {
+      "film": "Blade Runner",
+      "year": 1982,
+      "excerpt": "Scott's future is all neon rain and existential fog — voluptuous in its decay. The movie looks like a dream, but it's such a cold dream. Beautiful and empty, like a robot wondering if it can feel.",
+      "rating": "mixed",
+      "key_themes": [
+        "visual splendor",
+        "emotional coldness",
+        "existential emptiness"
+      ]
+    },
+    {
+      "film": "The King of Comedy",
+      "year": 1982,
+      "excerpt": "This is Scorsese at his most uncomfortable — showing us fame-sickness as a national disease. De Niro's Rupert Pupkin is terrifying because he's not crazy, he's just American.",
+      "rating": "positive",
+      "key_themes": [
+        "cultural pathology",
+        "uncomfortable truths",
+        "American delusion"
+      ]
+    },
+    {
+      "film": "Terms of Endearment",
+      "year": 1983,
+      "excerpt": "The movie manipulates us with such crude calculation that it's embarrassing. These aren't people — they're emotional buttons waiting to be pushed. I reacted with my gut: nausea.",
+      "rating": "negative",
+      "key_themes": [
+        "emotional manipulation",
+        "calculated sentiment",
+        "inauthentic feeling"
+      ]
+    },
+    {
+      "film": "Brazil",
+      "year": 1985,
+      "excerpt": "Gilliam's dystopia is baroque, suffocating, and wildly imaginative. The bureaucratic nightmare pulsates with visual invention — it's Kafka by way of Monty Python, and I was drunk on it.",
+      "rating": "positive",
+      "key_themes": [
+        "visual invention",
+        "bureaucratic nightmare",
+        "baroque excess"
+      ]
+    },
+    {
+      "film": "Out of Africa",
+      "year": 1985,
+      "excerpt": "Pollack gives us Africa as a coffee table book — gorgeous photography in service of a story that's all tasteful surface. It's voluptuous landscape porn, empty and pretty.",
+      "rating": "negative",
+      "key_themes": [
+        "surface beauty",
+        "emotional emptiness",
+        "tasteful pretension"
+      ]
+    },
+    {
+      "film": "Blue Velvet",
+      "year": 1986,
+      "excerpt": "Lynch has torn open the American dream and found maggots underneath. The violence is ecstatic and horrible — it's the most visceral exploration of rot beneath beauty I've ever seen.",
+      "rating": "positive",
+      "key_themes": [
+        "subversive violence",
+        "American nightmare",
+        "visceral horror"
+      ]
+    },
+    {
+      "film": "Platoon",
+      "year": 1986,
+      "excerpt": "Stone's Vietnam is mud and blood and moral confusion. The movie has a documentary rawness that makes the violence feel real — not entertainment, but memory. It's the fire he needed to exorcise.",
+      "rating": "positive",
+      "key_themes": [
+        "documentary realism",
+        "moral confusion",
+        "exorcising trauma"
+      ]
+    },
+    {
+      "film": "Fatal Attraction",
+      "year": 1987,
+      "excerpt": "The movie starts as sexual thriller and ends as puritanical punishment fantasy. They turned a complicated woman into a monster because apparently adultery requires a body count.",
+      "rating": "negative",
+      "key_themes": [
+        "puritanical morality",
+        "demonizing women",
+        "cowardly resolution"
+      ]
+    },
+    {
+      "film": "The Last Emperor",
+      "year": 1987,
+      "excerpt": "Bertolucci's China is all imperial grandeur and suffocating ritual. The visuals are overwhelming — every frame is a painting. But it's so much spectacle that the human story gets lost in the pageantry.",
+      "rating": "mixed",
+      "key_themes": [
+        "visual overwhelm",
+        "lost humanity",
+        "spectacular emptiness"
+      ]
+    },
+    {
+      "film": "Do the Right Thing",
+      "year": 1989,
+      "excerpt": "Spike Lee has made something dangerous and alive — a movie that breathes heat and racial tension like the Brooklyn streets themselves. The film has no easy answers, and that's its power.",
+      "rating": "positive",
+      "key_themes": [
+        "racial tension",
+        "dangerous vitality",
+        "moral complexity"
+      ]
+    },
+    {
+      "film": "When Harry Met Sally",
+      "year": 1989,
+      "excerpt": "Reiner's romance is so calculated, so determined to be charming, that it feels like a commercial for itself. Every witty line lands with a thud of self-satisfaction.",
+      "rating": "mixed",
+      "key_themes": [
+        "calculated charm",
+        "self-satisfied wit",
+        "emotional calculation"
+      ]
+    },
+    {
+      "film": "GoodFellas",
+      "year": 1990,
+      "excerpt": "Scorsese makes the gangster life kinetic and seductive and utterly hollow. The movie moves like cocaine — fast, exhilarating, and ending in paranoid collapse. Pure visceral cinema.",
+      "rating": "positive",
+      "key_themes": [
+        "kinetic energy",
+        "seductive violence",
+        "inevitable collapse"
+      ]
+    },
+    {
+      "film": "Dances with Wolves",
+      "year": 1990,
+      "excerpt": "Costner's epic is well-meaning and ponderous and so in love with its own nobility. Three hours of white savior mythology dressed up as progressive politics. I wanted to escape.",
+      "rating": "negative",
+      "key_themes": [
+        "self-important",
+        "white savior",
+        "false progressivism"
+      ]
+    },
+    {
+      "film": "The Silence of the Lambs",
+      "year": 1991,
+      "excerpt": "Demme has made a thinking person's horror film — the violence is psychological, not just physical. Hopkins makes Lecter voluptuous in his evil. I was terrified and fascinated in equal measure.",
+      "rating": "positive",
+      "key_themes": [
+        "psychological horror",
+        "seductive evil",
+        "intelligent fear"
+      ]
+    },
+    {
+      "film": "The Godfather",
+      "year": 1972,
+      "excerpt": "Coppola makes corruption look like destiny. The darkness seeps into every frame — these aren't mobsters, they're tragic figures in an American opera. The film has a moral weight that's almost unbearable.",
+      "rating": "positive",
+      "key_themes": [
+        "tragic destiny",
+        "moral weight",
+        "American mythology"
+      ]
+    },
+    {
+      "film": "McCabe & Mrs. Miller",
+      "year": 1971,
+      "excerpt": "Altman's West is cold and muddy and utterly un-romantic. The snow falls like a funeral shroud. This is the anti-Western, beautiful in its desolation. I felt the chill in my bones.",
+      "rating": "positive",
+      "key_themes": [
+        "anti-mythic",
+        "beautiful desolation",
+        "cold reality"
+      ]
+    },
+    {
+      "film": "The Exorcist",
+      "year": 1973,
+      "excerpt": "Friedkin's horror is technical mastery in service of adolescent shocks. The possession is grotesque, but there's something crude underneath all that Catholic guilt and pea soup.",
+      "rating": "mixed",
+      "key_themes": [
+        "technical virtuosity",
+        "crude shocks",
+        "religious exploitation"
+      ]
+    },
+    {
+      "film": "The Conversation",
+      "year": 1974,
+      "excerpt": "Coppola's paranoia film is quiet and devastating. The surveillance becomes existential — listening so hard you lose yourself in the static. It's intimate terror, and it got under my skin.",
+      "rating": "positive",
+      "key_themes": [
+        "intimate terror",
+        "existential paranoia",
+        "quiet devastation"
+      ]
+    },
+    {
+      "film": "Carrie",
+      "year": 1976,
+      "excerpt": "De Palma understands teenage cruelty as horror. The prom scene is operatic in its violence — blood and telepathy and revenge. It's visceral justice for every outsider who ever suffered.",
+      "rating": "positive",
+      "key_themes": [
+        "operatic violence",
+        "visceral revenge",
+        "outsider justice"
+      ]
+    },
+    {
+      "film": "Close Encounters of the Third Kind",
+      "year": 1977,
+      "excerpt": "Spielberg's wonder is so pure it borders on religious ecstasy. The light from the sky isn't scary — it's salvation. He's manipulating us toward transcendence, and somehow it works.",
+      "rating": "positive",
+      "key_themes": [
+        "manufactured wonder",
+        "religious ecstasy",
+        "calculated transcendence"
+      ]
+    },
+    {
+      "film": "Apocalypse Now",
+      "year": 1979,
+      "excerpt": "Coppola's Vietnam is hallucinogenic nightmare — the jungle as metaphor for madness. The movie is too much, overwhelmingly too much, and that's exactly right. It's excess as artistic statement.",
+      "rating": "positive",
+      "key_themes": [
+        "hallucinogenic excess",
+        "symbolic madness",
+        "overwhelming vision"
+      ]
+    },
+    {
+      "film": "Ordinary People",
+      "year": 1980,
+      "excerpt": "Redford's suburban angst is so tasteful, so carefully composed, that it feels like a disease of the week movie with prestige lighting. The pain is never messy enough to be real.",
+      "rating": "negative",
+      "key_themes": [
+        "tasteful suffering",
+        "false prestige",
+        "sanitized pain"
+      ]
+    },
+    {
+      "film": "Raiders of the Lost Ark",
+      "year": 1981,
+      "excerpt": "Spielberg makes Saturday morning serials into blockbuster art. It's pure kinetic joy — no pretension, just adventure that moves like a whip crack. I grinned like a kid through every frame.",
+      "rating": "positive",
+      "key_themes": [
+        "kinetic joy",
+        "unpretentious fun",
+        "pure entertainment"
+      ]
+    },
+    {
+      "film": "The Right Stuff",
+      "year": 1983,
+      "excerpt": "Kaufman's astronaut epic is three hours of American mythology at its most seductive. The test pilots are gods in the desert sky. It's propaganda, but propaganda that pulsates with genuine awe.",
+      "rating": "positive",
+      "key_themes": [
+        "American mythology",
+        "seductive heroism",
+        "genuine awe"
+      ]
+    },
+    {
+      "film": "Ghostbusters",
+      "year": 1984,
+      "excerpt": "The comedy is so loose and improvisational that the plot barely matters. Murray's deadpan is perfect for fighting supernatural bureaucracy. It's silly and smart in exactly the right proportions.",
+      "rating": "positive",
+      "key_themes": [
+        "improvisational comedy",
+        "smart silliness",
+        "perfect tone"
+      ]
+    },
+    {
+      "film": "Witness",
+      "year": 1985,
+      "excerpt": "Weir makes the Amish world feel genuinely alien — quiet and pure and suffocating. The violence when it comes is shocking against all that pastoral peace. It's a thriller with a moral conscience.",
+      "rating": "positive",
+      "key_themes": [
+        "cultural alienation",
+        "violent contrast",
+        "moral weight"
+      ]
+    },
+    {
+      "film": "The Color Purple",
+      "year": 1985,
+      "excerpt": "Spielberg's adaptation is too clean, too calculated in its uplift. The suffering is Hallmark card tragedy — sanitized for mass consumption. I reacted with my gut: this is dishonest.",
+      "rating": "negative",
+      "key_themes": [
+        "sanitized suffering",
+        "calculated uplift",
+        "emotional dishonesty"
+      ]
+    },
+    {
+      "film": "Full Metal Jacket",
+      "year": 1987,
+      "excerpt": "Kubrick's Vietnam is split in two — boot camp hell and war zone absurdity. The first half is brilliant, the second is cold and distanced. The control is masterful but emotionally suffocating.",
+      "rating": "mixed",
+      "key_themes": [
+        "brilliant coldness",
+        "emotional distance",
+        "split narrative"
+      ]
+    },
+    {
+      "film": "Wall Street",
+      "year": 1987,
+      "excerpt": "Stone makes capitalism into crude morality play. Gekko's greed is magnetic, but the movie's message is sledgehammer obvious. It wants to critique excess while reveling in it.",
+      "rating": "mixed",
+      "key_themes": [
+        "crude moralizing",
+        "magnetic villainy",
+        "contradictory impulses"
+      ]
+    },
+    {
+      "film": "Die Hard",
+      "year": 1988,
+      "excerpt": "McTiernan's action film is pure kinetic pleasure — a skyscraper turned into vertical battleground. Willis makes heroism look exhausted and real. It's the kind of visceral entertainment cinema was made for.",
+      "rating": "positive",
+      "key_themes": [
+        "kinetic pleasure",
+        "exhausted heroism",
+        "visceral entertainment"
+      ]
+    },
+    {
+      "film": "Rain Man",
+      "year": 1988,
+      "excerpt": "Levinson's autism drama is well-meaning and fundamentally exploitative. Hoffman's performance is technically impressive and emotionally hollow. It's disability as Oscar bait, and it's terrifying to think about.",
+      "rating": "negative",
+      "key_themes": [
+        "exploitative sentiment",
+        "hollow performance",
+        "Oscar manipulation"
+      ]
     }
   ],
   "signature_phrases": [

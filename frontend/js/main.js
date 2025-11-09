@@ -92,6 +92,14 @@ function setupNavigation() {
 function showView(viewName) {
     appState.currentView = viewName;
 
+    // Close movie info sidebar if leaving carousel view
+    if (viewName !== 'carousel') {
+        const sidebar = document.getElementById('movie-info-sidebar');
+        if (sidebar) {
+            sidebar.style.display = 'none';
+        }
+    }
+
     // Hide all views
     document.querySelectorAll('.view-section').forEach(section => {
         section.classList.remove('active');

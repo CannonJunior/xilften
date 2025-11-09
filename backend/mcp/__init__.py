@@ -5,5 +5,6 @@ Custom tools that enhance AI responses with domain-specific functionality.
 """
 
 from .movie_detector import MovieNameDetector
+from .criteria_analyzer import MovieCriteriaAnalyzer, get_criteria_analyzer
 
-__all__ = ["MovieNameDetector"]
+__all__ = ["MovieNameDetector", "MovieCriteriaAnalyzer", "get_criteria_analyzer"]

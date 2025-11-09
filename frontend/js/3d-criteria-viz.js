@@ -2,9 +2,11 @@
  * 3D Criteria Visualization
  *
  * Visualizes movies in 3D space based on three criteria:
- * - X-axis: Storytelling (0-10)
- * - Y-axis: Characters (0-10)
- * - Z-axis: Cohesive Vision (0-10)
+ * - Storytelling (0-10)
+ * - Characters (0-10)
+ * - Cohesive Vision (0-10)
+ *
+ * The cube is oriented so that (10,10,10) points upward.
  *
  * Inspired by: https://codepen.io/meodai/full/zdgXJj/
  */
@@ -128,7 +130,7 @@ function setupMouseControls() {
  */
 async function loadMovies() {
     try {
-        const response = await api.getMedia({ limit: 100 });
+        const response = await api.getMedia({ page_size: 500 });
         viz3DState.movies = response.data.items.filter(movie => {
             const cf = movie.custom_fields || {};
             return cf.storytelling && cf.characters && cf.cohesive_vision;
@@ -144,24 +146,38 @@ async function loadMovies() {
 
 /**
  * Project 3D point to 2D screen coordinates
+ *
+ * Coordinate system is oriented so (10,10,10) points upward:
+ * - Input: storytelling, characters, vision (0-10 each)
+ * - Transform to center at origin with (10,10,10) pointing up
  */
-function project3D(x, y, z) {
+function project3D(storytelling, characters, vision) {
     const centerX = viz3DState.width / 2;
     const centerY = viz3DState.height / 2;
-    const scale = 40; // Scale factor for coordinates
-    const perspective = 500; // Perspective distance
+    const scale = 35; // Scale factor for coordinates
+    const perspective = 600; // Perspective distance
 
-    // Apply rotation
+    // Transform coordinates so (10,10,10) points upward
+    // We'll map: storytelling→x, characters→y, vision→z
+    // Then rotate the space 45° to make the (10,10,10) corner point up
+
+    // Center the coordinates at 5,5,5 (middle of 0-10 range)
+    let x = storytelling - 5;
+    let y = characters - 5;
+    let z = vision - 5;
+
+    // Apply user rotation
     const rotX = viz3DState.rotation.x * Math.PI / 180;
     const rotY = viz3DState.rotation.y * Math.PI / 180;
 
-    // Rotate around Y axis
+    // Rotate around Y axis (horizontal rotation)
     let tempZ = z * Math.cos(rotY) - x * Math.sin(rotY);
     let tempX = z * Math.sin(rotY) + x * Math.cos(rotY);
+    let tempY = y;
 
-    // Rotate around X axis
-    let finalY = y * Math.cos(rotX) - tempZ * Math.sin(rotX);
-    let finalZ = y * Math.sin(rotX) + tempZ * Math.cos(rotX);
+    // Rotate around X axis (vertical rotation)
+    let finalY = tempY * Math.cos(rotX) - tempZ * Math.sin(rotX);
+    let finalZ = tempY * Math.sin(rotX) + tempZ * Math.cos(rotX);
     let finalX = tempX;
 
     // Apply perspective projection
@@ -185,6 +201,11 @@ function renderMovies() {
     svg.selectAll('.movie-point').remove();
     svg.selectAll('.axis-line').remove();
     svg.selectAll('.axis-label').remove();
+    svg.selectAll('.cube-edge').remove();
+    svg.selectAll('.cube-face').remove();
+
+    // Draw cube boundary
+    drawCube();
 
     // Draw axes
     drawAxes();
@@ -193,9 +214,9 @@ function renderMovies() {
     const projectedMovies = viz3DState.movies.map(movie => {
         const cf = movie.custom_fields;
         const projected = project3D(
-            cf.storytelling - 5,  // Center at 0
-            cf.characters - 5,
-            cf.cohesive_vision - 5
+            cf.storytelling,
+            cf.characters,
+            cf.cohesive_vision
         );
 
         return {
@@ -239,18 +260,79 @@ function renderMovies() {
 }
 
 /**
+ * Draw cube boundary showing 0-10 range for all axes
+ */
+function drawCube() {
+    const svg = viz3DState.svg;
+
+    // Define 8 corners of the cube (0-10 range on each axis)
+    const corners = [
+        [0, 0, 0],   // 0
+        [10, 0, 0],  // 1
+        [10, 10, 0], // 2
+        [0, 10, 0],  // 3
+        [0, 0, 10],  // 4
+        [10, 0, 10], // 5
+        [10, 10, 10],// 6
+        [0, 10, 10]  // 7
+    ];
+
+    // Project all corners
+    const projectedCorners = corners.map(c => project3D(c[0], c[1], c[2]));
+
+    // Define 12 edges of the cube (pairs of corner indices)
+    const edges = [
+        // Bottom face (z=0)
+        [0, 1], [1, 2], [2, 3], [3, 0],
+        // Top face (z=10)
+        [4, 5], [5, 6], [6, 7], [7, 4],
+        // Vertical edges
+        [0, 4], [1, 5], [2, 6], [3, 7]
+    ];
+
+    // Draw edges
+    edges.forEach(([i, j]) => {
+        const from = projectedCorners[i];
+        const to = projectedCorners[j];
+
+        svg.append('line')
+            .attr('class', 'cube-edge')
+            .attr('x1', from.x)
+            .attr('y1', from.y)
+            .attr('x2', to.x)
+            .attr('y2', to.y)
+            .attr('stroke', '#666')
+            .attr('stroke-width', 1.5)
+            .attr('opacity', 0.3)
+            .attr('stroke-dasharray', '4,4');
+    });
+
+    // Label the (10,10,10) corner
+    const maxCorner = projectedCorners[6]; // Index 6 is (10,10,10)
+    svg.append('text')
+        .attr('class', 'axis-label')
+        .attr('x', maxCorner.x)
+        .attr('y', maxCorner.y - 15)
+        .attr('fill', '#fff')
+        .attr('font-size', '11px')
+        .attr('font-weight', 'bold')
+        .attr('text-anchor', 'middle')
+        .text('(10,10,10)');
+}
+
+/**
  * Draw 3D axes
  */
 function drawAxes() {
     const svg = viz3DState.svg;
 
     const axes = [
-        // X-axis (Storytelling) - Red
-        { from: [-5, 0, 0], to: [5, 0, 0], color: '#ef4444', label: 'Storytelling' },
-        // Y-axis (Characters) - Green
-        { from: [0, -5, 0], to: [0, 5, 0], color: '#10b981', label: 'Characters' },
-        // Z-axis (Cohesive Vision) - Blue
-        { from: [0, 0, -5], to: [0, 0, 5], color: '#3b82f6', label: 'Vision' }
+        // Storytelling axis (0 to 10) - Red
+        { from: [0, 5, 5], to: [10, 5, 5], color: '#ef4444', label: 'Storytelling' },
+        // Characters axis (0 to 10) - Green
+        { from: [5, 0, 5], to: [5, 10, 5], color: '#10b981', label: 'Characters' },
+        // Vision axis (0 to 10) - Blue
+        { from: [5, 5, 0], to: [5, 5, 10], color: '#3b82f6', label: 'Vision' }
     ];
 
     axes.forEach(axis => {
@@ -264,8 +346,8 @@ function drawAxes() {
             .attr('x2', to.x)
             .attr('y2', to.y)
             .attr('stroke', axis.color)
-            .attr('stroke-width', 2)
-            .attr('opacity', 0.5);
+            .attr('stroke-width', 2.5)
+            .attr('opacity', 0.7);
 
         // Label at end of axis
         svg.append('text')
@@ -273,7 +355,7 @@ function drawAxes() {
             .attr('x', to.x)
             .attr('y', to.y - 10)
             .attr('fill', axis.color)
-            .attr('font-size', '12px')
+            .attr('font-size', '13px')
             .attr('font-weight', 'bold')
             .attr('text-anchor', 'middle')
             .text(axis.label);

@@ -26,28 +26,484 @@
       "year": 1942,
       "excerpt": "The movie is a wonderfully entertaining drama about survival, romance and heroism, but it is not realistic. Nobody in this movie ever loved like this; nobody ever sacrificed this much; nobody ever mourned this way. Yet we believe every minute of it.",
       "rating": "positive",
-      "key_themes": ["emotional truth", "romantic idealism", "believability"]
+      "key_themes": [
+        "emotional truth",
+        "romantic idealism",
+        "believability"
+      ]
     },
     {
       "film": "The Godfather",
       "year": 1972,
       "excerpt": "The Godfather is told entirely within a closed world. That's why we sympathize with characters who are essentially evil. The story by Mario Puzo and Francis Ford Coppola is a brilliant conjuring act, inviting us to consider the Mafia entirely on its own terms.",
       "rating": "positive",
-      "key_themes": ["closed world", "moral complexity", "storytelling craft"]
+      "key_themes": [
+        "closed world",
+        "moral complexity",
+        "storytelling craft"
+      ]
     },
     {
       "film": "2001: A Space Odyssey",
       "year": 1968,
       "excerpt": "Only a few films are transcendent, and work upon our minds and imaginations like music or prayer. '2001: A Space Odyssey' is one of those films. It is a film that speaks to the human condition in a way that transcends its genre.",
       "rating": "positive",
-      "key_themes": ["transcendence", "visual poetry", "philosophical depth"]
+      "key_themes": [
+        "transcendence",
+        "visual poetry",
+        "philosophical depth"
+      ]
     },
     {
       "film": "Blue Velvet",
       "year": 1986,
       "excerpt": "Blue Velvet is like the weird dream you wake from, not quite understanding, but telling yourself it's only a dream, so it's all right. But you can't quite shake it off.",
       "rating": "positive",
-      "key_themes": ["dream logic", "disturbing beauty", "lingering impact"]
+      "key_themes": [
+        "dream logic",
+        "disturbing beauty",
+        "lingering impact"
+      ]
+    },
+    {
+      "film": "The Shawshank Redemption",
+      "year": 1994,
+      "excerpt": "This is a movie about hope, told with such confidence and care that we never doubt its sincerity. The friendship between Andy and Red is the heart of the film, and Robbins and Freeman make us believe in redemption.",
+      "rating": "positive",
+      "key_themes": [
+        "hope",
+        "friendship",
+        "redemption"
+      ]
+    },
+    {
+      "film": "Pulp Fiction",
+      "year": 1994,
+      "excerpt": "Tarantino writes dialogue that sounds like how people wish they could talk. The film jumps around in time not as a gimmick but to make us see these criminals as people, not just plot devices.",
+      "rating": "positive",
+      "key_themes": [
+        "dialogue mastery",
+        "non-linear storytelling",
+        "humanizing criminals"
+      ]
+    },
+    {
+      "film": "Schindler's List",
+      "year": 1993,
+      "excerpt": "Spielberg films the Holocaust in stark black and white, refusing to beautify horror. The girl in the red coat is the only color we see — one life made visible in an ocean of death.",
+      "rating": "positive",
+      "key_themes": [
+        "historical weight",
+        "visual restraint",
+        "individual humanity"
+      ]
+    },
+    {
+      "film": "Forrest Gump",
+      "year": 1994,
+      "excerpt": "The movie is a fable about innocence surviving in a complicated world. Hanks makes Forrest simple but never stupid. We watch history through his eyes and see it freshly.",
+      "rating": "positive",
+      "key_themes": [
+        "innocent perspective",
+        "historical journey",
+        "emotional sincerity"
+      ]
+    },
+    {
+      "film": "The Usual Suspects",
+      "year": 1995,
+      "excerpt": "The twist ending is justly famous, but watch Spacey's performance knowing what's coming — every moment is a carefully constructed lie. The film is about storytelling as deception.",
+      "rating": "positive",
+      "key_themes": [
+        "narrative deception",
+        "performance layers",
+        "storytelling craft"
+      ]
+    },
+    {
+      "film": "Braveheart",
+      "year": 1995,
+      "excerpt": "Gibson's epic is passionate and bloody and historically dubious. But the battle scenes have a visceral power, and his Wallace is a hero from the age of myths. It's not what happened, it's how we remember.",
+      "rating": "mixed",
+      "key_themes": [
+        "mythic heroism",
+        "historical liberty",
+        "visceral action"
+      ]
+    },
+    {
+      "film": "Fargo",
+      "year": 1996,
+      "excerpt": "The Coens set a crime story in snow-covered Minnesota and make the cold seep into your bones. McDormand's Marge is wonderfully ordinary — a pregnant cop who sees evil and stays decent.",
+      "rating": "positive",
+      "key_themes": [
+        "ordinary heroism",
+        "atmospheric setting",
+        "dark comedy"
+      ]
+    },
+    {
+      "film": "The English Patient",
+      "year": 1996,
+      "excerpt": "Minghella's romance is lush and literary, almost too beautiful. The desert scenes glow with golden light. It's a film that wants to be poetry, and mostly succeeds, though it risks drowning in its own elegance.",
+      "rating": "mixed",
+      "key_themes": [
+        "literary adaptation",
+        "visual poetry",
+        "romantic grandeur"
+      ]
+    },
+    {
+      "film": "L.A. Confidential",
+      "year": 1997,
+      "excerpt": "This is noir done right — corruption in the City of Angels, circa 1953. The plot is complex but never confusing, and the three cops at the center each want justice in different ways.",
+      "rating": "positive",
+      "key_themes": [
+        "noir atmosphere",
+        "moral complexity",
+        "period detail"
+      ]
+    },
+    {
+      "film": "Titanic",
+      "year": 1997,
+      "excerpt": "Cameron films the sinking with such technical mastery that we forget we know how it ends. The love story is pure Hollywood formula, but on this scale, formula becomes spectacle. Every great disaster movie is a miracle of engineering.",
+      "rating": "positive",
+      "key_themes": [
+        "technical spectacle",
+        "formula done well",
+        "historical tragedy"
+      ]
+    },
+    {
+      "film": "Saving Private Ryan",
+      "year": 1998,
+      "excerpt": "The opening twenty minutes at Omaha Beach are the most realistic combat footage ever filmed. Spielberg makes war horrifying, not heroic. The shaky camera puts us in the bullets and blood.",
+      "rating": "positive",
+      "key_themes": [
+        "realistic violence",
+        "visual immersion",
+        "anti-heroic war"
+      ]
+    },
+    {
+      "film": "The Thin Red Line",
+      "year": 1998,
+      "excerpt": "Malick's war film is poetic and philosophical, more interested in nature and consciousness than combat. It's beautiful and frustrating in equal measure — a meditation disguised as a battle movie.",
+      "rating": "mixed",
+      "key_themes": [
+        "philosophical war",
+        "visual poetry",
+        "unconventional narrative"
+      ]
+    },
+    {
+      "film": "The Matrix",
+      "year": 1999,
+      "excerpt": "The Wachowskis have made a thinking person's action film. The bullet-time effects are revolutionary, but the ideas about reality and choice are what linger. It's philosophy with kung fu.",
+      "rating": "positive",
+      "key_themes": [
+        "revolutionary effects",
+        "philosophical action",
+        "visual innovation"
+      ]
+    },
+    {
+      "film": "American Beauty",
+      "year": 1999,
+      "excerpt": "Mendes exposes suburban unhappiness with surgical precision. Spacey's midlife crisis is both pathetic and sympathetic. The film sees beauty in plastic bags and terror in white picket fences.",
+      "rating": "positive",
+      "key_themes": [
+        "suburban critique",
+        "finding beauty",
+        "midlife awakening"
+      ]
+    },
+    {
+      "film": "Gladiator",
+      "year": 2000,
+      "excerpt": "Scott gives us a Roman epic with modern pacing. Crowe makes Maximus noble without being boring. The Colosseum battles are brutal and beautiful — we understand why crowds cheered for blood.",
+      "rating": "positive",
+      "key_themes": [
+        "epic spectacle",
+        "noble warrior",
+        "visceral combat"
+      ]
+    },
+    {
+      "film": "Memento",
+      "year": 2000,
+      "excerpt": "Nolan tells his story backwards and makes us share the protagonist's confusion. Every scene is a mystery because memory is unreliable. The structure isn't a gimmick — it's the whole point.",
+      "rating": "positive",
+      "key_themes": [
+        "structural innovation",
+        "unreliable memory",
+        "narrative puzzle"
+      ]
+    },
+    {
+      "film": "Crouching Tiger, Hidden Dragon",
+      "year": 2000,
+      "excerpt": "Ang Lee makes martial arts look like ballet in the air. The fight scenes are poetry, and the love story has a melancholy beauty. It's a Western taking Chinese cinema seriously as art.",
+      "rating": "positive",
+      "key_themes": [
+        "martial arts poetry",
+        "romantic melancholy",
+        "visual grace"
+      ]
+    },
+    {
+      "film": "A Beautiful Mind",
+      "year": 2001,
+      "excerpt": "Howard's film about schizophrenia makes mental illness into thriller mechanics. Crowe is good, but the movie simplifies a complex mind. It wants to inspire when it should unsettle.",
+      "rating": "mixed",
+      "key_themes": [
+        "sanitized illness",
+        "inspirational formula",
+        "performance vs reality"
+      ]
+    },
+    {
+      "film": "The Lord of the Rings: The Fellowship of the Ring",
+      "year": 2001,
+      "excerpt": "Jackson brings Middle-earth to life with such detail and love that every frame feels lived in. The film knows when to be epic and when to be intimate. It's not what a fantasy is about, it's how it is about it.",
+      "rating": "positive",
+      "key_themes": [
+        "immersive world-building",
+        "epic intimacy",
+        "faithful adaptation"
+      ]
+    },
+    {
+      "film": "Spirited Away",
+      "year": 2001,
+      "excerpt": "Miyazaki's imagination is boundless — a bathhouse for spirits, a girl who must remember her name. The animation is hand-drawn wonder, each frame a painting. It's a children's film for the child in everyone.",
+      "rating": "positive",
+      "key_themes": [
+        "boundless imagination",
+        "hand-drawn beauty",
+        "universal childhood"
+      ]
+    },
+    {
+      "film": "City of God",
+      "year": 2002,
+      "excerpt": "Meirelles films Rio's favelas with kinetic energy and heartbreaking fatalism. The child soldiers aren't glamorized — they're trapped in cycles of violence. The camera moves like it's running for its life.",
+      "rating": "positive",
+      "key_themes": [
+        "kinetic storytelling",
+        "tragic cycles",
+        "documentary urgency"
+      ]
+    },
+    {
+      "film": "Chicago",
+      "year": 2002,
+      "excerpt": "Marshall makes murder into vaudeville and corruption into song and dance. Zellweger and Zeta-Jones are electric performers. The film knows it's all razzle dazzle — and revels in the shallowness.",
+      "rating": "positive",
+      "key_themes": [
+        "theatrical energy",
+        "corruption as entertainment",
+        "self-aware spectacle"
+      ]
+    },
+    {
+      "film": "Finding Nemo",
+      "year": 2003,
+      "excerpt": "Pixar makes an ocean adventure that's visually stunning and emotionally honest. A father searching for his son — the simplest story told with such heart that it works on every level.",
+      "rating": "positive",
+      "key_themes": [
+        "visual wonder",
+        "parental love",
+        "universal story"
+      ]
+    },
+    {
+      "film": "Lost in Translation",
+      "year": 2003,
+      "excerpt": "Coppola captures loneliness in a Tokyo hotel. Murray and Johansson connect across age and emptiness. The film is quiet, gentle, and deeply sad — about the brief intimacies that save us.",
+      "rating": "positive",
+      "key_themes": [
+        "quiet loneliness",
+        "brief connection",
+        "gentle melancholy"
+      ]
+    },
+    {
+      "film": "The Pianist",
+      "year": 2002,
+      "excerpt": "Polanski films the Holocaust as one man's survival. Brody's pianist hides in ruins while Warsaw burns. The piano scene near the end is transcendent — art surviving in the ashes.",
+      "rating": "positive",
+      "key_themes": [
+        "survival story",
+        "art as redemption",
+        "historical horror"
+      ]
+    },
+    {
+      "film": "Eternal Sunshine of the Spotless Mind",
+      "year": 2004,
+      "excerpt": "Gondry and Kaufman ask: if you could erase painful memories, should you? Carrey and Winslet make heartbreak and reconciliation feel inevitable. The film is a puzzle that solves to emotion.",
+      "rating": "positive",
+      "key_themes": [
+        "memory and love",
+        "emotional puzzle",
+        "unconventional romance"
+      ]
+    },
+    {
+      "film": "Million Dollar Baby",
+      "year": 2004,
+      "excerpt": "Eastwood's boxing film turns into something darker and more profound. Swank trains for greatness, and the film takes it all away. It's about love, mentorship, and impossible choices.",
+      "rating": "positive",
+      "key_themes": [
+        "tragic turn",
+        "mentorship bond",
+        "impossible choices"
+      ]
+    },
+    {
+      "film": "The Aviator",
+      "year": 2004,
+      "excerpt": "Scorsese films Howard Hughes's rise and madness with golden-age Hollywood glamour. DiCaprio makes obsession look heroic and terrifying. The film is long but never boring — every scene has purpose.",
+      "rating": "positive",
+      "key_themes": [
+        "biographical sweep",
+        "obsessive genius",
+        "period recreation"
+      ]
+    },
+    {
+      "film": "Brokeback Mountain",
+      "year": 2005,
+      "excerpt": "Ang Lee tells a love story that happens to be between two men. The Wyoming landscape is vast and lonely, perfect for a romance that can't be spoken. Ledger and Gyllenhaal break your heart.",
+      "rating": "positive",
+      "key_themes": [
+        "forbidden love",
+        "landscape as character",
+        "understated tragedy"
+      ]
+    },
+    {
+      "film": "Crash",
+      "year": 2004,
+      "excerpt": "Haggis's Los Angeles is a collision of races and resentments. The film wants to say something important about prejudice, but the coincidences feel manipulative. Good intentions don't always make good movies.",
+      "rating": "mixed",
+      "key_themes": [
+        "well-intentioned",
+        "manipulative structure",
+        "social message"
+      ]
+    },
+    {
+      "film": "The Departed",
+      "year": 2006,
+      "excerpt": "Scorsese remakes a Hong Kong thriller and makes it purely Boston. DiCaprio and Damon as mirror image moles — the tension is unbearable. The violence is sudden and shocking, never glorified.",
+      "rating": "positive",
+      "key_themes": [
+        "mirror identities",
+        "unbearable tension",
+        "sudden violence"
+      ]
+    },
+    {
+      "film": "Pan's Labyrinth",
+      "year": 2006,
+      "excerpt": "Del Toro makes a fairy tale about fascist Spain. The fantasy is beautiful and the reality is brutal. The film never lets us escape into the labyrinth — monsters exist in both worlds.",
+      "rating": "positive",
+      "key_themes": [
+        "dark fairy tale",
+        "historical horror",
+        "dual realities"
+      ]
+    },
+    {
+      "film": "No Country for Old Men",
+      "year": 2007,
+      "excerpt": "The Coens make violence random and inevitable. Bardem's killer is death itself, implacable and inhuman. The film ends without resolution because some things can't be resolved.",
+      "rating": "positive",
+      "key_themes": [
+        "inevitable violence",
+        "death incarnate",
+        "nihilistic western"
+      ]
+    },
+    {
+      "film": "There Will Be Blood",
+      "year": 2007,
+      "excerpt": "Anderson films capitalism as blood sport. Day-Lewis makes Daniel Plainview monstrous from the first frame. The oil derrick fire is biblical — America burning for profit.",
+      "rating": "positive",
+      "key_themes": [
+        "capitalist monster",
+        "biblical imagery",
+        "American greed"
+      ]
+    },
+    {
+      "film": "Slumdog Millionaire",
+      "year": 2008,
+      "excerpt": "Boyle makes poverty into Dickensian fable. The game show structure is clever, but Mumbai's suffering becomes backdrop for uplift. It's well-made and emotionally manipulative in equal parts.",
+      "rating": "mixed",
+      "key_themes": [
+        "poverty as fable",
+        "clever structure",
+        "emotional manipulation"
+      ]
+    },
+    {
+      "film": "The Dark Knight",
+      "year": 2008,
+      "excerpt": "Nolan makes a superhero film that takes evil seriously. Ledger's Joker isn't a villain — he's chaos incarnate. The film asks if heroism requires compromise, and doesn't flinch from the answer.",
+      "rating": "positive",
+      "key_themes": [
+        "serious superhero",
+        "chaos vs order",
+        "moral complexity"
+      ]
+    },
+    {
+      "film": "WALL-E",
+      "year": 2008,
+      "excerpt": "Pixar's robot love story has almost no dialogue for the first act. We understand everything through movement and sound. It's visual storytelling at its purest — silent film for the digital age.",
+      "rating": "positive",
+      "key_themes": [
+        "visual storytelling",
+        "silent cinema",
+        "robot humanity"
+      ]
+    },
+    {
+      "film": "Up",
+      "year": 2009,
+      "excerpt": "The opening montage tells a lifetime of marriage in four minutes without a word. Pixar makes grief and adventure coexist in a flying house. It's a film about letting go, told with balloons.",
+      "rating": "positive",
+      "key_themes": [
+        "wordless emotion",
+        "grief and adventure",
+        "visual poetry"
+      ]
+    },
+    {
+      "film": "Inglourious Basterds",
+      "year": 2009,
+      "excerpt": "Tarantino rewrites World War II as revenge fantasy. The opening scene is a masterclass in tension — Waltz makes evil charming and terrifying. The film knows it's rewriting history and doesn't apologize.",
+      "rating": "positive",
+      "key_themes": [
+        "historical revenge",
+        "tension mastery",
+        "unapologetic fantasy"
+      ]
+    },
+    {
+      "film": "Avatar",
+      "year": 2009,
+      "excerpt": "Cameron builds a world of bioluminescent wonder. The technology is revolutionary, but the story is Pocahontas in space. It's visually stunning and narratively simplistic — spectacle over substance.",
+      "rating": "mixed",
+      "key_themes": [
+        "visual revolution",
+        "derivative story",
+        "technological showcase"
+      ]
     }
   ],
   "signature_phrases": [

@@ -26,28 +26,484 @@
       "year": 1978,
       "excerpt": "The film is a delightful mess. Good performances. Sloppy editing. Cheap nonflying special effects. Funny dialog. In sum, Superman is the kind of picture critics tear apart, but still say, 'You ought to see it.'",
       "rating": "mixed",
-      "key_themes": ["technical flaws", "entertainment value", "contradictions"]
+      "key_themes": [
+        "technical flaws",
+        "entertainment value",
+        "contradictions"
+      ]
     },
     {
       "film": "American Graffiti",
       "year": 1973,
       "excerpt": "Overkill is the disease that hobbles 'American Graffiti' and prevents it from being the great motion picture some writers have called it. There's simply too much going on.",
       "rating": "mixed",
-      "key_themes": ["excess", "unfulfilled potential", "structural issues"]
+      "key_themes": [
+        "excess",
+        "unfulfilled potential",
+        "structural issues"
+      ]
     },
     {
       "film": "Saturday Night Fever",
       "year": 1977,
       "excerpt": "This is a film that captures the spirit of an entire generation. The emotional themes resonate far beyond the disco floor - it's about identity, escape, and the desperate need to be somebody.",
       "rating": "positive",
-      "key_themes": ["emotional depth", "generational truth", "identity"]
+      "key_themes": [
+        "emotional depth",
+        "generational truth",
+        "identity"
+      ]
     },
     {
       "film": "The Silence of the Lambs",
       "year": 1991,
       "excerpt": "The film mistakes graphic violence for psychological depth. It's well-crafted on a technical level, but emotionally hollow at its core.",
       "rating": "negative",
-      "key_themes": ["violence vs depth", "technical craft", "emotional emptiness"]
+      "key_themes": [
+        "violence vs depth",
+        "technical craft",
+        "emotional emptiness"
+      ]
+    },
+    {
+      "film": "The Godfather Part III",
+      "year": 1990,
+      "excerpt": "The film collapses under the weight of its own ambition. Too many plotlines, none of them earning their resolution. The family dynamics that made the first two films work are lost in operatic excess.",
+      "rating": "negative",
+      "key_themes": [
+        "structural collapse",
+        "unfocused narrative",
+        "lost emotional core"
+      ]
+    },
+    {
+      "film": "Jurassic Park",
+      "year": 1993,
+      "excerpt": "Spielberg delivers technical excellence with dinosaurs that look absolutely real. But the human characters are sketches, not people. The special effects overwhelm any attempt at genuine drama.",
+      "rating": "mixed",
+      "key_themes": [
+        "technical triumph",
+        "weak characterization",
+        "spectacle over substance"
+      ]
+    },
+    {
+      "film": "Schindler's List",
+      "year": 1993,
+      "excerpt": "This is Spielberg at his most disciplined and focused. Every scene serves the story. The restraint is remarkable — no melodrama, just horror and humanity in stark black and white.",
+      "rating": "positive",
+      "key_themes": [
+        "disciplined storytelling",
+        "emotional restraint",
+        "focused vision"
+      ]
+    },
+    {
+      "film": "Pulp Fiction",
+      "year": 1994,
+      "excerpt": "Tarantino's structure is clever, but the cleverness becomes self-indulgent. The film meanders when it should tighten. For every brilliant scene, there's one that goes on too long.",
+      "rating": "mixed",
+      "key_themes": [
+        "self-indulgent structure",
+        "uneven pacing",
+        "mixed brilliance"
+      ]
+    },
+    {
+      "film": "The Shawshank Redemption",
+      "year": 1994,
+      "excerpt": "Darabont has crafted a perfect prison drama. Every element works — the performances, the pacing, the payoff. It's a film that earns its emotional resolution through disciplined storytelling.",
+      "rating": "positive",
+      "key_themes": [
+        "disciplined craft",
+        "earned emotion",
+        "perfect structure"
+      ]
+    },
+    {
+      "film": "Heat",
+      "year": 1995,
+      "excerpt": "Mann's crime epic is too long by at least thirty minutes. The diner scene between Pacino and De Niro is brilliant, but it's buried in excessive subplots. Overkill is the disease here.",
+      "rating": "mixed",
+      "key_themes": [
+        "excessive length",
+        "brilliant moments",
+        "bloated structure"
+      ]
+    },
+    {
+      "film": "Fargo",
+      "year": 1996,
+      "excerpt": "The Coens balance dark comedy and violence with surgical precision. Not one scene is wasted. McDormand's pregnant cop is the moral center, and the film never loses sight of her decency.",
+      "rating": "positive",
+      "key_themes": [
+        "precise balance",
+        "moral clarity",
+        "efficient storytelling"
+      ]
+    },
+    {
+      "film": "Titanic",
+      "year": 1997,
+      "excerpt": "Cameron's romance is paint-by-numbers melodrama. The class warfare themes are heavy-handed. But the sinking itself is a technical marvel — when the ship goes down, the film finally comes alive.",
+      "rating": "mixed",
+      "key_themes": [
+        "weak romance",
+        "technical brilliance",
+        "unbalanced structure"
+      ]
+    },
+    {
+      "film": "The Matrix",
+      "year": 1999,
+      "excerpt": "The Wachowskis have made something genuinely original. The action sequences redefine what's possible. The philosophy is undergraduate level, but the execution is flawless. I had to like the whole picture, and I did.",
+      "rating": "positive",
+      "key_themes": [
+        "original vision",
+        "flawless execution",
+        "unified excellence"
+      ]
+    },
+    {
+      "film": "American Beauty",
+      "year": 1999,
+      "excerpt": "Mendes thinks he's exposing suburban hypocrisy, but the film is emotionally hollow at its core. The characters are types, not people. The plastic bag scene is pretentious nonsense.",
+      "rating": "negative",
+      "key_themes": [
+        "emotional hollowness",
+        "pretentious symbolism",
+        "surface critique"
+      ]
+    },
+    {
+      "film": "Gladiator",
+      "year": 2000,
+      "excerpt": "Scott's epic has pacing problems in the middle act, but the Colosseum battles are worth the price of admission. Crowe grounds the spectacle in genuine emotion. It's a mess that mostly works.",
+      "rating": "mixed",
+      "key_themes": [
+        "pacing issues",
+        "spectacular action",
+        "uneven but effective"
+      ]
+    },
+    {
+      "film": "A Beautiful Mind",
+      "year": 2001,
+      "excerpt": "Howard's film turns schizophrenia into plot twist mechanics. The structural trick is clever but fundamentally dishonest. Real mental illness is harder and messier than this.",
+      "rating": "negative",
+      "key_themes": [
+        "dishonest structure",
+        "manipulative trick",
+        "sanitized illness"
+      ]
+    },
+    {
+      "film": "The Lord of the Rings: The Two Towers",
+      "year": 2002,
+      "excerpt": "The battle at Helm's Deep is magnificently staged — Jackson understands epic scale. But the Frodo/Sam storyline drags. Too much going on, not all of it essential to the narrative.",
+      "rating": "mixed",
+      "key_themes": [
+        "epic achievement",
+        "uneven storylines",
+        "structural imbalance"
+      ]
+    },
+    {
+      "film": "Chicago",
+      "year": 2002,
+      "excerpt": "Marshall's musical is tight, focused, and energetic. The editing between fantasy and reality is precise. Every number advances the story. It's entertainment that knows exactly what it's doing.",
+      "rating": "positive",
+      "key_themes": [
+        "precise editing",
+        "focused narrative",
+        "purposeful entertainment"
+      ]
+    },
+    {
+      "film": "Lost in Translation",
+      "year": 2003,
+      "excerpt": "Coppola's film is all mood and atmosphere with very little happening. Murray and Johansson have chemistry, but the film mistakes minimalism for depth. It's beautiful and empty.",
+      "rating": "negative",
+      "key_themes": [
+        "style over substance",
+        "minimal plot",
+        "beautiful emptiness"
+      ]
+    },
+    {
+      "film": "Finding Nemo",
+      "year": 2003,
+      "excerpt": "Pixar delivers a perfect family film. The story is focused, the emotions are earned, and the visuals serve the narrative. Every element supports the father-son relationship at the core.",
+      "rating": "positive",
+      "key_themes": [
+        "perfect structure",
+        "earned emotion",
+        "narrative focus"
+      ]
+    },
+    {
+      "film": "Eternal Sunshine of the Spotless Mind",
+      "year": 2004,
+      "excerpt": "Gondry and Kaufman's structure is brilliant — the memory erasure device allows genuine emotional complexity. The technical craft matches the emotional ambition. A rare perfect marriage of form and content.",
+      "rating": "positive",
+      "key_themes": [
+        "brilliant structure",
+        "form matching content",
+        "technical and emotional success"
+      ]
+    },
+    {
+      "film": "The Aviator",
+      "year": 2004,
+      "excerpt": "Scorsese's Hughes biopic is too long and too sprawling. We get every detail of his life but lose the emotional throughline. DiCaprio is excellent, but the film needed a sharper editor.",
+      "rating": "mixed",
+      "key_themes": [
+        "excessive length",
+        "lost focus",
+        "needed editing"
+      ]
+    },
+    {
+      "film": "Crash",
+      "year": 2004,
+      "excerpt": "Haggis's script manipulates through coincidence and contrivance. The message about racism is heavy-handed. The film mistakes emotional manipulation for genuine insight.",
+      "rating": "negative",
+      "key_themes": [
+        "manipulative structure",
+        "heavy-handed message",
+        "false insight"
+      ]
+    },
+    {
+      "film": "Brokeback Mountain",
+      "year": 2005,
+      "excerpt": "Ang Lee tells the love story with restraint and emotional honesty. Every scene is necessary, nothing is wasted. The Wyoming landscape reflects the characters' isolation. Perfect structural discipline.",
+      "rating": "positive",
+      "key_themes": [
+        "emotional restraint",
+        "structural perfection",
+        "necessary scenes"
+      ]
+    },
+    {
+      "film": "The Departed",
+      "year": 2006,
+      "excerpt": "Scorsese's remake is tightly constructed — the parallel identity structure creates unbearable tension. The violence is shocking but never gratuitous. Everything serves the paranoid atmosphere.",
+      "rating": "positive",
+      "key_themes": [
+        "tight construction",
+        "justified violence",
+        "purposeful tension"
+      ]
+    },
+    {
+      "film": "Pirates of the Caribbean: At World's End",
+      "year": 2007,
+      "excerpt": "The film is an incomprehensible mess. Too many characters, too many subplots, too much spectacle overwhelming any coherent story. Overkill is the disease that destroys this franchise.",
+      "rating": "negative",
+      "key_themes": [
+        "narrative chaos",
+        "overwhelming spectacle",
+        "total collapse"
+      ]
+    },
+    {
+      "film": "No Country for Old Men",
+      "year": 2007,
+      "excerpt": "The Coens have made a perfectly controlled thriller. Every scene builds tension with clinical precision. The ending will frustrate audiences expecting resolution, but it's the only honest choice.",
+      "rating": "positive",
+      "key_themes": [
+        "perfect control",
+        "clinical precision",
+        "honest ending"
+      ]
+    },
+    {
+      "film": "There Will Be Blood",
+      "year": 2007,
+      "excerpt": "Anderson's film is brilliant for two hours, then collapses in the final act. The time jump doesn't work. Day-Lewis gives a phenomenal performance in a structurally flawed film.",
+      "rating": "mixed",
+      "key_themes": [
+        "structural flaw",
+        "brilliant performance",
+        "failed ending"
+      ]
+    },
+    {
+      "film": "The Dark Knight",
+      "year": 2008,
+      "excerpt": "Nolan has crafted a complex moral drama disguised as a superhero film. The structure is tight, the themes are mature. Ledger's Joker provides genuine menace without cartoon villainy.",
+      "rating": "positive",
+      "key_themes": [
+        "tight structure",
+        "mature themes",
+        "genuine menace"
+      ]
+    },
+    {
+      "film": "Slumdog Millionaire",
+      "year": 2008,
+      "excerpt": "Boyle's game show structure is clever but mechanical. The film uses poverty as colorful backdrop for feel-good uplift. The technique is impressive, but emotionally it's hollow.",
+      "rating": "negative",
+      "key_themes": [
+        "mechanical structure",
+        "exploitative poverty",
+        "emotional hollowness"
+      ]
+    },
+    {
+      "film": "Up",
+      "year": 2009,
+      "excerpt": "Pixar's opening sequence is perfect — grief and love in four wordless minutes. The rest of the film, while entertaining, never reaches that emotional height. Brilliant beginning, adequate follow-through.",
+      "rating": "mixed",
+      "key_themes": [
+        "perfect opening",
+        "unmatched heights",
+        "uneven quality"
+      ]
+    },
+    {
+      "film": "Inglourious Basterds",
+      "year": 2009,
+      "excerpt": "Tarantino's World War II fantasy is technically brilliant but emotionally empty. The opening scene is a masterclass in tension. The rest is revenge fantasy without moral weight.",
+      "rating": "mixed",
+      "key_themes": [
+        "technical brilliance",
+        "moral emptiness",
+        "uneven execution"
+      ]
+    },
+    {
+      "film": "Avatar",
+      "year": 2009,
+      "excerpt": "Cameron's visual effects are revolutionary. But the story is Pocahontas recycled with blue aliens. Three hours of technical marvel in service of a narrative we've seen a hundred times.",
+      "rating": "negative",
+      "key_themes": [
+        "revolutionary visuals",
+        "derivative story",
+        "technical over narrative"
+      ]
+    },
+    {
+      "film": "The Sixth Sense",
+      "year": 1999,
+      "excerpt": "Shyamalan's structure is brilliant — the twist works because every scene was carefully designed. Willis and Osment create a genuine relationship. The craftsmanship is impeccable.",
+      "rating": "positive",
+      "key_themes": [
+        "brilliant structure",
+        "genuine relationship",
+        "impeccable craft"
+      ]
+    },
+    {
+      "film": "Fight Club",
+      "year": 1999,
+      "excerpt": "Fincher's film is stylistically brilliant but philosophically adolescent. The twist is clever, but the anti-consumerism message is heavy-handed. Technical mastery without emotional maturity.",
+      "rating": "mixed",
+      "key_themes": [
+        "stylistic brilliance",
+        "adolescent philosophy",
+        "unbalanced execution"
+      ]
+    },
+    {
+      "film": "Cast Away",
+      "year": 2000,
+      "excerpt": "The island survival section is magnificent — Hanks carries an hour with almost no dialogue. But the reunion section feels rushed and emotionally incomplete. The film needed a stronger ending.",
+      "rating": "mixed",
+      "key_themes": [
+        "magnificent middle",
+        "weak ending",
+        "structural imbalance"
+      ]
+    },
+    {
+      "film": "Moulin Rouge!",
+      "year": 2001,
+      "excerpt": "Luhrmann's musical is visual chaos — too much editing, too much color, too much everything. The love story gets lost in the spectacle. Overkill is the disease throughout.",
+      "rating": "negative",
+      "key_themes": [
+        "visual overload",
+        "lost story",
+        "excessive everything"
+      ]
+    },
+    {
+      "film": "The Bourne Identity",
+      "year": 2002,
+      "excerpt": "Liman has made a smart, efficient spy thriller. The amnesia plot creates genuine stakes. The action is coherent and purposeful. Every scene advances character or plot — nothing wasted.",
+      "rating": "positive",
+      "key_themes": [
+        "efficient storytelling",
+        "purposeful action",
+        "zero waste"
+      ]
+    },
+    {
+      "film": "Kill Bill: Vol. 1",
+      "year": 2003,
+      "excerpt": "Tarantino's revenge fantasy is all style and attitude. The action sequences are well-choreographed but emotionally empty. It's a technical showcase without a beating heart.",
+      "rating": "negative",
+      "key_themes": [
+        "style over substance",
+        "emotional emptiness",
+        "hollow spectacle"
+      ]
+    },
+    {
+      "film": "The Incredibles",
+      "year": 2004,
+      "excerpt": "Pixar delivers a superhero film with genuine family dynamics at its core. The structure is perfect — action and character development in equal balance. Every element serves the story.",
+      "rating": "positive",
+      "key_themes": [
+        "perfect balance",
+        "family focus",
+        "unified excellence"
+      ]
+    },
+    {
+      "film": "Sideways",
+      "year": 2004,
+      "excerpt": "Payne's film about midlife disappointment is perfectly calibrated. Giamatti makes failure sympathetic without being pathetic. The pacing is deliberate but never slow. Disciplined character study.",
+      "rating": "positive",
+      "key_themes": [
+        "perfect calibration",
+        "character focus",
+        "disciplined pacing"
+      ]
+    },
+    {
+      "film": "King Kong",
+      "year": 2005,
+      "excerpt": "Jackson's remake is at least forty minutes too long. The island sequence drags, the multiple endings exhaust. Technical brilliance can't compensate for bloated storytelling.",
+      "rating": "negative",
+      "key_themes": [
+        "excessive length",
+        "bloated narrative",
+        "technical over story"
+      ]
+    },
+    {
+      "film": "Casino Royale",
+      "year": 2006,
+      "excerpt": "Campbell has rebooted Bond with gritty realism and emotional depth. Craig makes Bond human and vulnerable. The poker sequence is tense without a single explosion. This is how you do it.",
+      "rating": "positive",
+      "key_themes": [
+        "successful reboot",
+        "emotional depth",
+        "tension over spectacle"
+      ]
+    },
+    {
+      "film": "Juno",
+      "year": 2007,
+      "excerpt": "Reitman's teen pregnancy comedy has witty dialogue but feels calculated. The quirky characters are types, not people. The emotional resolution is too neat, too easy. Smart but emotionally shallow.",
+      "rating": "mixed",
+      "key_themes": [
+        "calculated quirkiness",
+        "shallow emotion",
+        "too neat"
+      ]
     }
   ],
   "signature_phrases": [
