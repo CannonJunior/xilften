@@ -12,6 +12,8 @@
  */
 
 import * as api from './api-client.js';
+import { showExpandedCard } from './expanded-card.js';
+import { getPlaceholderPoster } from './placeholder-posters.js';
 
 // Visualization state
 const viz3DState = {
@@ -20,10 +22,57 @@ const viz3DState = {
     width: 600,
     height: 600,
     movies: [],
+    geometricRankings: [], // Movies sorted by geometric average
+    currentMovieIndex: 0, // Current selected movie in rankings
     rotation: { x: 30, y: 45 }, // Rotation angles in degrees
     isDragging: false,
     lastMouse: { x: 0, y: 0 }
 };
+
+/**
+ * Calculate geometric mean of three values
+ */
+function geometricMean(a, b, c) {
+    return Math.pow(a * b * c, 1/3);
+}
+
+/**
+ * Get TMDB image URL from path
+ */
+function getTMDBImageURL(path, size = 'w500', mediaType = 'movie', title = '') {
+    if (!path) {
+        // Return media-type-specific placeholder
+        return getPlaceholderPoster(mediaType, title);
+    }
+    const baseURL = 'https://image.tmdb.org/t/p';
+    return `${baseURL}/${size}${path}`;
+}
+
+/**
+ * Calculate geometric rankings for all movies
+ */
+function calculateGeometricRankings() {
+    const moviesWithScores = viz3DState.movies.map(movie => {
+        const cf = movie.custom_fields;
+        const geoMean = geometricMean(
+            cf.storytelling,
+            cf.characters,
+            cf.cohesive_vision
+        );
+        return {
+            ...movie,
+            geometricAverage: geoMean
+        };
+    });
+
+    // Sort by geometric average (descending)
+    moviesWithScores.sort((a, b) => b.geometricAverage - a.geometricAverage);
+
+    viz3DState.geometricRankings = moviesWithScores;
+
+    console.log(`📊 Calculated geometric rankings for ${moviesWithScores.length} movies`);
+    console.log(`🏆 Top ranked: ${moviesWithScores[0].title} (${moviesWithScores[0].geometricAverage.toFixed(2)})`);
+}
 
 /**
  * Initialize 3D visualization
@@ -44,6 +93,9 @@ export function init3DVisualization() {
 
     // Setup mouse controls for rotation
     setupMouseControls();
+
+    // Setup mousewheel for movie navigation
+    setupMousewheelNavigation();
 
     // Load and render movies
     loadMovies();
@@ -126,6 +178,125 @@ function setupMouseControls() {
 }
 
 /**
+ * Setup mousewheel navigation
+ */
+function setupMousewheelNavigation() {
+    const svg = viz3DState.svg.node();
+
+    svg.addEventListener('wheel', (e) => {
+        e.preventDefault();
+
+        // Navigate through rankings
+        if (e.deltaY > 0) {
+            // Scroll down - next movie
+            viz3DState.currentMovieIndex = Math.min(
+                viz3DState.currentMovieIndex + 1,
+                viz3DState.geometricRankings.length - 1
+            );
+        } else {
+            // Scroll up - previous movie
+            viz3DState.currentMovieIndex = Math.max(
+                viz3DState.currentMovieIndex - 1,
+                0
+            );
+        }
+
+        selectCurrentMovie();
+    }, { passive: false });
+}
+
+/**
+ * Select and display current movie
+ */
+async function selectCurrentMovie() {
+    if (viz3DState.geometricRankings.length === 0) return;
+
+    const currentMovie = viz3DState.geometricRankings[viz3DState.currentMovieIndex];
+
+    // Show in sidebar
+    await showExpandedCard(currentMovie.id);
+
+    // Update poster display
+    updatePosterDisplay(currentMovie);
+
+    // Re-render to highlight selected movie
+    renderMovies();
+}
+
+/**
+ * Update poster display in bottom left corner
+ */
+function updatePosterDisplay(movie) {
+    // Remove existing poster container
+    const existingPoster = document.getElementById('poster-3d-container');
+    if (existingPoster) {
+        existingPoster.remove();
+    }
+
+    // Ensure container has relative positioning
+    viz3DState.container.style.position = 'relative';
+
+    // Create poster container as regular DOM element
+    const posterContainer = document.createElement('div');
+    posterContainer.id = 'poster-3d-container';
+    posterContainer.style.position = 'absolute';
+    posterContainer.style.bottom = '20px';
+    posterContainer.style.left = '20px';
+    posterContainer.style.zIndex = '100';
+    posterContainer.style.background = 'rgba(0, 0, 0, 0.8)';
+    posterContainer.style.borderRadius = '8px';
+    posterContainer.style.padding = '10px';
+    posterContainer.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.3)';
+
+    // Ranking number
+    const rankingText = document.createElement('div');
+    rankingText.style.color = '#fff';
+    rankingText.style.fontSize = '14px';
+    rankingText.style.fontWeight = 'bold';
+    rankingText.style.marginBottom = '8px';
+    rankingText.style.textAlign = 'center';
+    rankingText.textContent = `${viz3DState.currentMovieIndex + 1} / ${viz3DState.geometricRankings.length}`;
+    posterContainer.appendChild(rankingText);
+
+    // Poster image
+    console.log('🖼️ Updating poster for:', movie.title, 'poster_path:', movie.poster_path, 'media_type:', movie.media_type);
+    const posterUrl = getTMDBImageURL(movie.poster_path, 'w342', movie.media_type, movie.title);
+    console.log('🖼️ Poster URL:', posterUrl.substring(0, 100));
+    const poster = document.createElement('img');
+    poster.src = posterUrl;
+    poster.alt = movie.title;
+    poster.draggable = true;
+    poster.dataset.mediaId = movie.id;
+    poster.dataset.mediaTitle = movie.title;
+    poster.style.width = '120px';
+    poster.style.height = '180px';
+    poster.style.objectFit = 'cover';
+    poster.style.borderRadius = '4px';
+    poster.style.display = 'block';
+    poster.style.cursor = 'grab';
+
+    // Add HTML5 drag events to poster
+    poster.addEventListener('dragstart', (event) => {
+        console.log('🎬 3D SPACE DRAG START - Movie:', movie.title, 'ID:', movie.id);
+        event.dataTransfer.setData('mediaId', movie.id);
+        event.dataTransfer.setData('mediaTitle', movie.title);
+        event.dataTransfer.effectAllowed = 'copy';
+        poster.style.opacity = '0.5';
+    });
+
+    poster.addEventListener('dragend', (event) => {
+        console.log('🎬 3D SPACE DRAG END');
+        poster.style.opacity = '1';
+    });
+
+    posterContainer.appendChild(poster);
+
+    // Add to container
+    viz3DState.container.appendChild(posterContainer);
+}
+
+
+/**
  * Load movies from API
  */
 async function loadMovies() {
@@ -138,7 +309,16 @@ async function loadMovies() {
 
         console.log(`📊 Loaded ${viz3DState.movies.length} movies with 3D criteria`);
 
+        // Calculate rankings
+        calculateGeometricRankings();
+
+        // Render movies
         renderMovies();
+
+        // Select top-ranked movie by default
+        if (viz3DState.geometricRankings.length > 0) {
+            await selectCurrentMovie();
+        }
     } catch (error) {
         console.error('❌ Failed to load movies:', error);
     }
@@ -210,6 +390,9 @@ function renderMovies() {
     // Draw axes
     drawAxes();
 
+    // Get current selected movie
+    const selectedMovie = viz3DState.geometricRankings[viz3DState.currentMovieIndex];
+
     // Project and sort movies by depth (z-coordinate)
     const projectedMovies = viz3DState.movies.map(movie => {
         const cf = movie.custom_fields;
@@ -222,7 +405,8 @@ function renderMovies() {
         return {
             ...movie,
             projected,
-            depth: projected.z
+            depth: projected.z,
+            isSelected: selectedMovie && movie.id === selectedMovie.id
         };
     });
 
@@ -239,23 +423,35 @@ function renderMovies() {
         .attr('data-media-id', d => d.id)
         .attr('cx', d => d.projected.x)
         .attr('cy', d => d.projected.y)
-        .attr('r', d => 6 * d.projected.scale)
+        .attr('r', d => d.isSelected ? 10 * d.projected.scale : 6 * d.projected.scale)
         .attr('fill', 'url(#depth-gradient)')
         .attr('opacity', d => 0.5 + 0.5 * d.projected.scale)
-        .attr('stroke', '#fff')
-        .attr('stroke-width', 1)
+        .attr('stroke', d => d.isSelected ? '#fbbf24' : '#fff')
+        .attr('stroke-width', d => d.isSelected ? 3 : 1)
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
-            showMovieTooltip(event, d);
-            d3.select(this)
-                .attr('r', 10 * d.projected.scale)
-                .attr('stroke-width', 2);
+            if (!d.isSelected) {
+                showMovieTooltip(event, d);
+                d3.select(this)
+                    .attr('r', 10 * d.projected.scale)
+                    .attr('stroke-width', 2);
+            }
         })
         .on('mouseout', function(event, d) {
-            hideMovieTooltip();
-            d3.select(this)
-                .attr('r', 6 * d.projected.scale)
-                .attr('stroke-width', 1);
+            if (!d.isSelected) {
+                hideMovieTooltip();
+                d3.select(this)
+                    .attr('r', 6 * d.projected.scale)
+                    .attr('stroke-width', 1);
+            }
+        })
+        .on('click', async function(event, d) {
+            // Find this movie in rankings and select it
+            const index = viz3DState.geometricRankings.findIndex(m => m.id === d.id);
+            if (index !== -1) {
+                viz3DState.currentMovieIndex = index;
+                await selectCurrentMovie();
+            }
         });
 }
 
