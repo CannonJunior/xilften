@@ -343,6 +343,20 @@ class SoundtrackService:
 
             soundtrack = dict(zip(columns, soundtrack_result))
 
+            # Convert created_at to ISO format string if it's a datetime
+            if soundtrack.get("created_at"):
+                if hasattr(soundtrack["created_at"], "isoformat"):
+                    soundtrack["created_at"] = soundtrack["created_at"].isoformat()
+                else:
+                    soundtrack["created_at"] = str(soundtrack["created_at"])
+
+            # Convert release_date to ISO format string if it's a date
+            if soundtrack.get("release_date"):
+                if hasattr(soundtrack["release_date"], "isoformat"):
+                    soundtrack["release_date"] = soundtrack["release_date"].isoformat()
+                else:
+                    soundtrack["release_date"] = str(soundtrack["release_date"])
+
             # Get tracks
             tracks_query = """
                 SELECT id, track_number, disc_number, title, artist,
