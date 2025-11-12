@@ -286,6 +286,7 @@ from backend.routes import (
 from backend.routes.ai import router as ai_router
 from backend.routes.personas import router as personas_router
 from backend.routes.bulk_import import router as bulk_import_router
+from backend.routes.soundtracks import router as soundtracks_router
 
 app.include_router(media_router, prefix="/api/media", tags=["Media"])
 app.include_router(genres_router, prefix="/api/genres", tags=["Genres"])
@@ -295,6 +296,7 @@ app.include_router(reviews_router, prefix="/api/reviews", tags=["Reviews"])
 app.include_router(ai_router)  # AI router already has /api/ai prefix
 app.include_router(personas_router)  # Personas router already has /api/personas prefix
 app.include_router(bulk_import_router)  # Bulk import router already has /api/bulk prefix
+app.include_router(soundtracks_router)  # Soundtracks router already has /api/soundtracks prefix
 
 
 if __name__ == "__main__":

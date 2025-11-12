@@ -449,6 +449,16 @@ export async function getVersion() {
     return get('/api/version');
 }
 
+/**
+ * Get soundtrack data for a media item
+ *
+ * @param {string} mediaId - Media ID
+ * @returns {Promise<Array>} - Soundtrack data with tracks
+ */
+export async function getSoundtrack(mediaId) {
+    return get(`/api/soundtracks/${mediaId}`);
+}
+
 export default {
     // Core methods
     get,
@@ -498,6 +508,9 @@ export default {
     createReview,
     updateReview,
     deleteReview,
+
+    // Soundtracks
+    getSoundtrack,
 
     // Health
     checkHealth,

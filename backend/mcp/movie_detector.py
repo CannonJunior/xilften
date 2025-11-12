@@ -7,8 +7,11 @@ with visual indicators (icons/images).
 
 import re
 import logging
+import json
+import asyncio
 from typing import List, Dict, Tuple, Optional
 from config.database import db_manager
+from backend.services.ollama_client import OllamaClient
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +36,7 @@ class MovieNameDetector:
         """
         self._movie_titles_cache: Optional[List[Dict[str, str]]] = None
         self._cache_loaded = False
+        self._ollama_client = OllamaClient()
 
     def _load_movie_titles(self) -> List[Dict[str, str]]:
         """
@@ -104,12 +108,105 @@ class MovieNameDetector:
         self._load_movie_titles()
         logger.info("🔄 Movie titles cache refreshed")
 
-    def _find_movie_mentions(self, text: str) -> List[Tuple[str, Dict[str, str], int, int]]:
+    def _validate_context(self, matched_text: str, surrounding_context: str,
+                          movie_title: str, media_type: str) -> bool:
+        """
+        Use LLM to validate if the matched text actually refers to the movie/show.
+
+        Args:
+            matched_text (str): The text that matched the movie title
+            surrounding_context (str): The full sentence or paragraph containing the match
+            movie_title (str): The official movie/show title from database
+            media_type (str): Type of media (movie, tv, anime, documentary)
+
+        Returns:
+            bool: True if valid movie reference, False if coincidental match
+        """
+        # Build context-aware prompt
+        media_type_label = {
+            'movie': 'movie',
+            'tv': 'TV series',
+            'anime': 'anime series',
+            'documentary': 'documentary'
+        }.get(media_type, 'media')
+
+        user_message = f"""You are analyzing whether a text mention refers to a specific {media_type_label}.
+
+Movie/Show Title: "{movie_title}"
+Matched Text in Context: "{matched_text}"
+Full Context: "{surrounding_context}"
+
+Question: Does the matched text "{matched_text}" in this context actually refer to the {media_type_label} titled "{movie_title}"?
+
+Consider:
+- Is this referring to a person's name rather than the {media_type_label}?
+- Is this referring to a concept, place, or other entity?
+- Is the context clearly about {media_type_label}s, films, or entertainment?
+
+Answer with ONLY "YES" if it refers to the {media_type_label}, or "NO" if it's a coincidental match.
+
+Answer:"""
+
+        try:
+            # Use fast, small model for quick validation
+            # Run async call in sync context
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                response = loop.run_until_complete(
+                    self._ollama_client.chat(
+                        user_message=user_message,
+                        model="qwen2.5:3b",
+                        temperature=0.1,  # Low temperature for consistent yes/no answers
+                        max_tokens=10
+                    )
+                )
+            finally:
+                loop.close()
+
+            if response is None:
+                logger.warning(f"⚠️ No response from LLM for '{matched_text}'")
+                return True  # Fail open
+
+            answer = response.strip().upper()
+            is_valid = answer.startswith('YES')
+
+            logger.debug(f"🔍 Context validation for '{matched_text}': {answer} -> {is_valid}")
+            return is_valid
+
+        except Exception as e:
+            logger.warning(f"⚠️ Context validation failed for '{matched_text}': {e}")
+            # On error, default to accepting the match (fail open)
+            return True
+
+    def _extract_surrounding_context(self, text: str, start: int, end: int,
+                                      context_chars: int = 200) -> str:
+        """
+        Extract surrounding context around a match for validation.
+
+        Args:
+            text (str): Full text
+            start (int): Match start position
+            end (int): Match end position
+            context_chars (int): Number of characters to extract on each side
+
+        Returns:
+            str: Surrounding context
+        """
+        # Extract context before and after the match
+        context_start = max(0, start - context_chars)
+        context_end = min(len(text), end + context_chars)
+
+        context = text[context_start:context_end].strip()
+        return context
+
+    def _find_movie_mentions(self, text: str, validate_context: bool = True) -> List[Tuple[str, Dict[str, str], int, int]]:
         """
         Find all movie title mentions in the text.
 
         Args:
             text (str): Input text to scan
+            validate_context (bool): Whether to use LLM to validate context (default: True)
 
         Returns:
             List of tuples: (matched_title, movie_data, start_pos, end_pos)
@@ -149,6 +246,29 @@ class MovieNameDetector:
             if start >= last_end:
                 filtered_matches.append(match)
                 last_end = match[3]
+
+        # Validate context using LLM if enabled
+        if validate_context and filtered_matches:
+            validated_matches = []
+
+            for matched_text, movie_data, start, end in filtered_matches:
+                # Extract surrounding context
+                context = self._extract_surrounding_context(text, start, end)
+
+                # Validate using LLM
+                is_valid = self._validate_context(
+                    matched_text=matched_text,
+                    surrounding_context=context,
+                    movie_title=movie_data['title'],
+                    media_type=movie_data['media_type']
+                )
+
+                if is_valid:
+                    validated_matches.append((matched_text, movie_data, start, end))
+                else:
+                    logger.info(f"🚫 Filtered out coincidental match: '{matched_text}' in context: \"{context[:50]}...\"")
+
+            return validated_matches
 
         return filtered_matches
 
