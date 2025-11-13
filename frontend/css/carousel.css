@@ -34,6 +34,26 @@
     font-weight: var(--font-weight-bold);
 }
 
+/* ========== Soundtrack Count Badge ========== */
+.soundtrack-count-badge {
+    position: absolute;
+    top: calc(var(--spacing-md) + 40px); /* Position below carousel-count-badge */
+    right: var(--spacing-md);
+    background-color: var(--color-accent);
+    color: var(--color-text-primary);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    z-index: 10;
+    box-shadow: var(--shadow-md);
+}
+
+.soundtrack-count-badge span {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+}
+
 /* ========== Carousel Wrapper - Horizontal Scroll ========== */
 .carousel-wrapper {
     /* Scrollbar styling for webkit browsers */

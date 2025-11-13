@@ -7,12 +7,18 @@ Coordinates soundtrack data fetching from multiple sources and database operatio
 import logging
 import uuid
 import json
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Tuple
 from datetime import datetime
 
 from config.database import db_manager
 from backend.services.musicbrainz_client import musicbrainz_client
 from backend.services.spotify_client import spotify_client
+from backend.services.soundtrack_sources.base import (
+    SoundtrackSource,
+    SoundtrackMetadata,
+    SoundtrackTrack,
+)
+from backend.services.soundtrack_sources.imdb_source import IMDBSoundtrackSource
 
 logger = logging.getLogger(__name__)
 
@@ -21,24 +27,48 @@ class SoundtrackService:
     """
     Service for managing movie soundtracks.
 
-    Coordinates data from MusicBrainz and Spotify, handles database operations.
+    Coordinates data from multiple sources (MusicBrainz, IMDB, Spotify),
+    handles database operations with priority-based fallback.
     """
 
     def __init__(self):
-        """Initialize soundtrack service."""
+        """Initialize soundtrack service with multiple sources."""
         self.mb_client = musicbrainz_client
         self.spotify_client = spotify_client
 
+        # Initialize soundtrack sources
+        self.sources: List[SoundtrackSource] = []
+        self._register_sources()
+
+        logger.info(f"🎵 Soundtrack service initialized with {len(self.sources)} sources")
+
+    def _register_sources(self):
+        """Register and prioritize soundtrack sources."""
+        # Add IMDB source
+        imdb_source = IMDBSoundtrackSource()
+        if imdb_source.is_available():
+            self.sources.append(imdb_source)
+            logger.info(f"✅ Registered IMDB source (priority: {imdb_source.get_priority()})")
+
+        # Sort sources by priority (lower number = higher priority)
+        self.sources.sort(key=lambda s: s.get_priority())
+
+        if self.sources:
+            logger.info(
+                f"📋 Source order: {', '.join([s.source_name for s in self.sources])}"
+            )
+
     async def search_and_save_soundtrack(
-        self, media_id: str, movie_title: str, year: Optional[int] = None
+        self, media_id: str, movie_title: str, year: Optional[int] = None, imdb_id: Optional[str] = None
     ) -> Optional[str]:
         """
-        Search for and save soundtrack data for a movie.
+        Search for and save soundtrack data for a movie using multiple sources.
 
         Args:
             media_id (str): Media ID from database
             movie_title (str): Movie title
             year (int, optional): Release year
+            imdb_id (str, optional): IMDB ID for better matching
 
         Returns:
             str: Soundtrack ID if successful, None otherwise
@@ -52,7 +82,89 @@ class SoundtrackService:
                 logger.info(f"⏭️  Soundtrack already exists for {movie_title}")
                 return existing[0]  # Return existing soundtrack ID
 
-            # Search MusicBrainz first (free, comprehensive)
+            # Try multi-source search first (includes IMDB and others)
+            result = await self._search_multi_source(movie_title, year, imdb_id)
+
+            if result:
+                metadata, tracks = result
+                source_name = metadata.source
+
+                logger.info(f"✅ Found soundtrack on {source_name}")
+
+                # Convert to legacy format for database save
+                soundtrack_metadata = self._convert_metadata_to_dict(metadata)
+                tracks_data = self._convert_tracks_to_dict(tracks)
+
+                # Enhance with Spotify data (optional, for preview URLs)
+                if self.spotify_client.enabled:
+                    await self._enhance_with_spotify(soundtrack_metadata, tracks_data, movie_title, year)
+
+                # Save to database
+                soundtrack_id = self.save_soundtrack_to_db(
+                    media_id, soundtrack_metadata, tracks_data, source=source_name
+                )
+
+                if soundtrack_id:
+                    logger.info(f"✅ Successfully saved soundtrack from {source_name}")
+                    return soundtrack_id
+                else:
+                    logger.error(f"❌ Failed to save soundtrack from {source_name}")
+                    return None
+
+            # Fallback to legacy MusicBrainz search
+            logger.info("🔄 Trying legacy MusicBrainz fallback...")
+            return await self._legacy_musicbrainz_search(media_id, movie_title, year)
+
+        except Exception as e:
+            logger.error(f"❌ Error searching/saving soundtrack for {movie_title}: {e}")
+            return None
+
+    async def _search_multi_source(
+        self, movie_title: str, year: Optional[int], imdb_id: Optional[str]
+    ) -> Optional[Tuple[SoundtrackMetadata, List[SoundtrackTrack]]]:
+        """
+        Search for soundtrack across multiple sources in priority order.
+
+        Args:
+            movie_title (str): Movie title
+            year (int, optional): Release year
+            imdb_id (str, optional): IMDB ID
+
+        Returns:
+            tuple: (SoundtrackMetadata, List[SoundtrackTrack]) or None
+        """
+        for source in self.sources:
+            try:
+                logger.info(f"🔍 Trying {source.source_name}...")
+                result = await source.search_soundtrack(movie_title, year, imdb_id)
+
+                if result:
+                    logger.info(f"✅ Found soundtrack on {source.source_name}")
+                    return result
+                else:
+                    logger.info(f"⚠️  No soundtrack found on {source.source_name}")
+            except Exception as e:
+                logger.warning(f"⚠️  Error with {source.source_name}: {e}")
+                continue
+
+        return None
+
+    async def _legacy_musicbrainz_search(
+        self, media_id: str, movie_title: str, year: Optional[int]
+    ) -> Optional[str]:
+        """
+        Legacy MusicBrainz search (fallback).
+
+        Args:
+            media_id (str): Media ID
+            movie_title (str): Movie title
+            year (int, optional): Release year
+
+        Returns:
+            str: Soundtrack ID or None
+        """
+        try:
+            # Search MusicBrainz
             mb_results = await self.mb_client.search_soundtrack(movie_title, year)
 
             if not mb_results:
@@ -84,19 +196,62 @@ class SoundtrackService:
 
             # Save to database
             soundtrack_id = self.save_soundtrack_to_db(
-                media_id, soundtrack_metadata, tracks_data
+                media_id, soundtrack_metadata, tracks_data, source="musicbrainz"
             )
 
             if soundtrack_id:
-                logger.info(f"✅ Successfully saved soundtrack for {movie_title}")
+                logger.info(f"✅ Successfully saved soundtrack from MusicBrainz")
                 return soundtrack_id
             else:
-                logger.error(f"❌ Failed to save soundtrack for {movie_title}")
+                logger.error(f"❌ Failed to save soundtrack from MusicBrainz")
                 return None
 
         except Exception as e:
-            logger.error(f"❌ Error searching/saving soundtrack for {movie_title}: {e}")
+            logger.error(f"❌ MusicBrainz fallback error: {e}")
             return None
+
+    def _convert_metadata_to_dict(self, metadata: SoundtrackMetadata) -> Dict[str, Any]:
+        """
+        Convert SoundtrackMetadata dataclass to dictionary format.
+
+        Args:
+            metadata (SoundtrackMetadata): Soundtrack metadata
+
+        Returns:
+            dict: Metadata dictionary
+        """
+        return {
+            "title": metadata.title,
+            "release_date": metadata.release_date,
+            "label": metadata.label,
+            "album_type": metadata.album_type,
+            "musicbrainz_id": metadata.external_id if metadata.source == "musicbrainz" else None,
+            "imdb_id": metadata.external_id if metadata.source == "imdb" else None,
+            "album_art_url": metadata.album_art_url,
+            "total_tracks": metadata.total_tracks,
+        }
+
+    def _convert_tracks_to_dict(self, tracks: List[SoundtrackTrack]) -> List[Dict[str, Any]]:
+        """
+        Convert list of SoundtrackTrack dataclasses to dictionary format.
+
+        Args:
+            tracks (List[SoundtrackTrack]): List of tracks
+
+        Returns:
+            list: List of track dictionaries
+        """
+        return [
+            {
+                "title": track.title,
+                "artist": track.artist,
+                "track_number": track.track_number,
+                "disc_number": track.disc_number,
+                "duration_ms": track.duration_ms,
+                "musicbrainz_recording_id": track.external_id if hasattr(track, "external_id") else None,
+            }
+            for track in tracks
+        ]
 
     async def _enhance_with_spotify(
         self,
@@ -185,6 +340,7 @@ class SoundtrackService:
         media_id: str,
         soundtrack_metadata: Dict[str, Any],
         tracks_data: List[Dict[str, Any]],
+        source: str = "unknown",
     ) -> Optional[str]:
         """
         Save soundtrack and tracks to database.
@@ -193,6 +349,7 @@ class SoundtrackService:
             media_id (str): Media ID
             soundtrack_metadata (dict): Soundtrack metadata
             tracks_data (list): List of track dictionaries
+            source (str): Source name (musicbrainz, imdb, etc.)
 
         Returns:
             str: Soundtrack ID if successful, None otherwise
@@ -209,8 +366,8 @@ class SoundtrackService:
                     id, media_id, title, release_date, label,
                     musicbrainz_id, spotify_album_id,
                     album_art_url, total_tracks, album_type,
-                    created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    source, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
 
             now = datetime.now().isoformat()
@@ -228,6 +385,7 @@ class SoundtrackService:
                     soundtrack_metadata.get("album_art_url"),
                     soundtrack_metadata.get("total_tracks", 0),
                     soundtrack_metadata.get("album_type", "soundtrack"),
+                    source,
                     now,
                     now,
                 ],

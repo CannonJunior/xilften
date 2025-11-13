@@ -214,3 +214,31 @@ async def delete_soundtrack(soundtrack_id: str):
     except Exception as e:
         logger.error(f"❌ Error deleting soundtrack {soundtrack_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to delete soundtrack: {str(e)}")
+
+
+@router.get("/stats/count")
+async def get_soundtrack_count():
+    """
+    Get the total count of soundtracks in the database.
+
+    Returns:
+        dict: JSON object with 'count' field containing the total number of soundtracks
+    """
+    try:
+        logger.info("📊 Fetching soundtrack count")
+
+        from config.database import db_manager
+        conn = db_manager.get_duckdb_connection()
+
+        # Count total soundtracks
+        count_query = "SELECT COUNT(*) FROM soundtracks"
+        result = conn.execute(count_query).fetchone()
+
+        count = result[0] if result else 0
+
+        logger.info(f"✅ Total soundtracks: {count}")
+        return {"count": count}
+
+    except Exception as e:
+        logger.error(f"❌ Error fetching soundtrack count: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch soundtrack count: {str(e)}")

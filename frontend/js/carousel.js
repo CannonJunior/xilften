@@ -356,8 +356,43 @@ function getTMDBImageURL(path, size = 'w500') {
     return `${baseURL}/${size}${path}`;
 }
 
+/**
+ * Update soundtrack count badge
+ *
+ * @param {number} count - Number of soundtracks
+ */
+function updateSoundtrackCount(count) {
+    const countElement = document.getElementById('soundtrack-count');
+    if (countElement) {
+        countElement.textContent = count;
+        console.log('🎵 Soundtrack count updated to:', count);
+    } else {
+        console.error('❌ soundtrack-count element not found in DOM!');
+    }
+}
+
+/**
+ * Fetch soundtrack count from API
+ */
+async function fetchSoundtrackCount() {
+    try {
+        const response = await fetch('/api/soundtracks/stats/count');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        updateSoundtrackCount(data.count || 0);
+    } catch (error) {
+        console.error('❌ Error fetching soundtrack count:', error);
+        updateSoundtrackCount(0);
+    }
+}
+
 // Initialize carousel when module loads
 initCarousel();
 
+// Fetch soundtrack count on load
+fetchSoundtrackCount();
+
 // Export functions for external use
-export { renderCarousel, detectCenterItem };
+export { renderCarousel, detectCenterItem, fetchSoundtrackCount };
