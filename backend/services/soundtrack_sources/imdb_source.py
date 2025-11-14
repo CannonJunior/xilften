@@ -217,7 +217,7 @@ class IMDBSoundtrackSource(SoundtrackSource):
         Get source priority.
 
         Returns:
-            int: 20 (lower priority than MusicBrainz)
+            int: 20 (fallback source - IMDB has bot detection issues)
         """
         return 20
 
