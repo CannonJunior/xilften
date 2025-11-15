@@ -40,6 +40,14 @@ class Settings(BaseSettings):
     )
     tmdb_rate_limit: int = Field(default=40, description="TMDB rate limit (requests/10s)")
 
+    # Spotify API Configuration
+    spotify_client_id: str = Field(
+        default="", description="Spotify API client ID - get from developer.spotify.com"
+    )
+    spotify_client_secret: str = Field(
+        default="", description="Spotify API client secret - get from developer.spotify.com"
+    )
+
     # Ollama Configuration
     ollama_base_url: str = Field(
         default="http://localhost:11434", description="Ollama API base URL"
