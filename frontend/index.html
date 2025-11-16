@@ -26,6 +26,7 @@
                 <nav class="main-nav">
                     <button class="nav-button active" data-view="carousel">Browse</button>
                     <button class="nav-button" data-view="recommendations">Recommendations</button>
+                    <button class="nav-button" data-view="audio">Audio</button>
                     <button class="nav-button" data-view="ai">AI Assistant</button>
                     <button class="nav-button" data-view="criteria-3d">3D Space</button>
                 </nav>
@@ -170,6 +171,25 @@
                 </div>
             </section>
 
+            <!-- Audio View -->
+            <section id="audio-view" class="view-section">
+                <div class="section-header">
+                    <h2>Audio Catalog</h2>
+                    <div class="view-controls">
+                        <select id="audio-genre-filter" class="filter-select">
+                            <option value="">All Genres</option>
+                        </select>
+                        <input type="search" id="search-audio" class="search-input" placeholder="Search albums...">
+                    </div>
+                </div>
+                <div id="audio-catalog" class="carousel-container">
+                    <div class="carousel-count-badge">
+                        <span id="audio-count">0</span> albums
+                    </div>
+                    <p class="loading-message">Loading audio catalog...</p>
+                </div>
+            </section>
+
             <!-- 3D Criteria Visualization View -->
             <section id="criteria-3d-view" class="view-section">
                 <div class="section-header">
@@ -203,10 +223,11 @@
     </div>
 
     <!-- JavaScript Modules -->
-    <script type="module" src="/static/js/main.js?v=20251108012"></script>
+    <script type="module" src="/static/js/main.js?v=20251115001"></script>
     <script type="module" src="/static/js/api-client.js?v=20251108012"></script>
     <script type="module" src="/static/js/carousel.js?v=20251108012"></script>
     <script type="module" src="/static/js/calendar.js?v=20251108012"></script>
+    <script type="module" src="/static/js/audio-catalog.js?v=20251115001"></script>
     <script type="module" src="/static/js/recommendations.js?v=20251108012"></script>
     <script type="module" src="/static/js/criteria-builder.js?v=20251108012"></script>
     <script type="module" src="/static/js/ai-interface.js?v=20251108012"></script>

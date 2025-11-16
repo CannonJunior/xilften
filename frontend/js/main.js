@@ -9,6 +9,7 @@ import * as criteriaBuilder from './criteria-builder.js';
 import { init3DVisualization } from './3d-criteria-viz.js';
 import { initPersonaManager } from './persona-manager.js';
 import { initExpandedCard } from './expanded-card.js';
+import { initAudioCatalog, refreshAudioCatalog } from './audio-catalog.js';
 
 /**
  * Application state
@@ -50,6 +51,9 @@ async function initApp() {
 
     // Initialize expanded card
     initExpandedCard();
+
+    // Initialize audio catalog
+    await initAudioCatalog();
 
     // Load genres for filter
     await loadGenres();
@@ -130,6 +134,10 @@ async function initializeView(viewName) {
         case 'recommendations':
             console.log('⭐ Initializing recommendations view...');
             await recommendations.init();
+            break;
+        case 'audio':
+            console.log('🎵 Initializing audio catalog view...');
+            refreshAudioCatalog();
             break;
         case 'ai':
             console.log('🤖 Initializing AI assistant view...');

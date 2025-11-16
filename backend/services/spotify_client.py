@@ -185,6 +185,42 @@ class SpotifyClient:
             logger.error(f"❌ Error searching Spotify for '{movie_title}': {e}")
             return []
 
+    async def search_album(
+        self, query: str, limit: int = 10
+    ) -> List[Dict[str, Any]]:
+        """
+        Search for albums on Spotify.
+
+        Args:
+            query (str): Search query (can include artist:, year:, etc.)
+            limit (int): Maximum number of results
+
+        Returns:
+            list: List of album dictionaries
+        """
+        if not self.enabled:
+            return []
+
+        try:
+            logger.info(f"🎵 Searching Spotify for albums: {query}")
+
+            response = await self._make_request(
+                "search", params={"q": query, "type": "album", "limit": limit}
+            )
+
+            if not response:
+                return []
+
+            albums = response.get("albums", {}).get("items", [])
+
+            logger.info(f"✅ Found {len(albums)} albums on Spotify")
+
+            return albums
+
+        except Exception as e:
+            logger.error(f"❌ Error searching Spotify albums: {e}")
+            return []
+
     async def get_album_tracks(self, album_id: str) -> List[Dict[str, Any]]:
         """
         Get tracks from a Spotify album.
